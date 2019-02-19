@@ -9,4 +9,4 @@ Work-in-progress.
 ## Setup
 
     $ npm install
-    $ lerna bootstrap
+    $ npx lerna bootstrap
