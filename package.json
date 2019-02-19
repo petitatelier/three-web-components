@@ -1,18 +1,20 @@
 {
   "name": "@petitatelier/three-web-components",
   "description": "A collection of Web Components to compose Three.js apps",
+  "version": "0.0.0",
+  "author": "Olivier Lange",
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "bootstrap": "npx lerna bootstrap --hoist"
+  },
+  "devDependencies": {
+    "lerna": "^3.13.0"
+  },
   "keywords": [
     "three",
     "webcomponents",
     "3d"
   ],
-  "version": "0.0.0",
-  "author": "Olivier Lange",
-  "license": "BSD-3-Clause",
-  "scripts": {},
-  "devDependencies": {
-    "lerna": "^3.13.0"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/olange/three-web-components.git"
