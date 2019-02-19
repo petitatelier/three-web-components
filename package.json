@@ -1,7 +1,7 @@
 {
   "name": "@petitatelier/three-web-components",
+  "private": true,
   "description": "A collection of Web Components to compose Three.js apps",
-  "version": "0.0.0",
   "author": "Olivier Lange",
   "license": "BSD-3-Clause",
   "scripts": {
