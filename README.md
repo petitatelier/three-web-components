@@ -8,7 +8,6 @@ Work-in-progress.
 
 ## Setup
 
-    $ npm install
     $ npm run bootstrap
 
 ## Demos
