@@ -15,3 +15,7 @@ Work-in-progress.
 Start the local HTTP server and open http://localhost:8081/:
 
     $ npm run dev
+
+## Design
+
+See model in [design intentions](DESIGN.md).
