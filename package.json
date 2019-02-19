@@ -5,10 +5,13 @@
   "author": "Olivier Lange",
   "license": "BSD-3-Clause",
   "scripts": {
-    "bootstrap": "npx lerna bootstrap --hoist"
+    "bootstrap": "npx lerna bootstrap --hoist",
+    "dev": "polyserve --npm --module-resolution=node"
   },
   "devDependencies": {
-    "lerna": "^3.13.0"
+    "@webcomponents/webcomponentsjs": "^2.2.4",
+    "lerna": "^3.13.0",
+    "polyserve": "^0.27.15"
   },
   "keywords": [
     "three",

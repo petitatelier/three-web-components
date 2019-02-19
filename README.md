@@ -10,3 +10,9 @@ Work-in-progress.
 
     $ npm install
     $ npm run bootstrap
+
+## Demos
+
+Start the local HTTP server and open http://localhost:8081/:
+
+    $ npm run dev
