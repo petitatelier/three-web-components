@@ -1,0 +1,36 @@
+{
+  "name": "@petitatelier/three-app",
+  "description": "Three app container, that provides animation timing and registry of renderers and scenes",
+  "keywords": [
+    "three.js",
+    "webcomponent",
+    "3d"
+  ],
+  "version": "0.0.0",
+  "author": "Olivier Lange",
+  "license": "BSD-3-Clause",
+  "main": "src/three-app.js",
+  "module": "src/three-app.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "lit-element": "^2.0.1",
+    "lit-html": "^1.0.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olange/three-web-components.git"
+  },
+  "bugs": {
+    "url": "https://github.com/olange/three-web-components/issues"
+  },
+  "homepage": "https://github.com/olange/three-web-components#readme"
+}
