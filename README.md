@@ -12,7 +12,7 @@ Work-in-progress.
 
 ## Demos
 
-Start the local HTTP server and open http://localhost:8081/:
+Start the local HTTP dev server and visit http://localhost:8081/demos/:
 
     $ npm run dev
 
