@@ -6,7 +6,7 @@
     "webcomponent",
     "3d"
   ],
-  "version": "0.0.0",
+  "version": "0.1.0-alpha.0",
   "author": "Olivier Lange",
   "license": "BSD-3-Clause",
   "main": "src/three-app.js",
@@ -24,7 +24,6 @@
     "lit-element": "^2.0.1",
     "lit-html": "^1.0.0"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/olange/three-web-components.git"
