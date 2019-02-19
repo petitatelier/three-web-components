@@ -1,5 +1,7 @@
 # Three Web Components
 
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
+
 A collection of Web Components to compose Three.js web apps.
 
 ## Status
