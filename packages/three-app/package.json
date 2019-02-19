@@ -4,7 +4,7 @@
   "description": "Three app container, that provides animation timing and registry of renderers and scenes",
   "author": "Olivier Lange",
   "license": "BSD-3-Clause",
-  "main": "src/three-app.js",
+  "main": "three-app.js",
   "scripts": {},
   "dependencies": {
     "lit-element": "^2.0.1",
