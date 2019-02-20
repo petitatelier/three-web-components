@@ -57,10 +57,7 @@ export class ThreeApp extends LitElement {
     super();
 
     // Bind callback methods to this instance
-    this.tick = this.tickCallback.bind( this);
-    this.step = this.stepCallback.bind( this);
-    this.needsResize = this.needsResizeCallback.bind( this);
-    this.resize = this.resizeCallback.bind( this);
+    this.tick = this.tick.bind( this);
 
     // Initialize internal properties
     this._initialized = false;
@@ -149,17 +146,35 @@ export class ThreeApp extends LitElement {
    * @param {number} time The current time; a high-resolution timer value,
    *   as it comes from `window.requestAnimationFrame()`.
    */
-  tickCallback( time) {
+  tick( time) {
     this._time = time;
     const delta = time - this._lastTime;
 
     if( delta >= this._interval) {
-      this.updateTimings( delta);
       this.step( time, delta);
       this._lastTime = time;
     }
 
     window.requestAnimationFrame( this.tick); // `this.tick()` is this `tickCallback()` bound to each instance of this class; see constructor
+  }
+
+  /**
+   * The main animation step, which actually updates the scenes and renders them.
+   * Called automatically from `tick()`, every time the animation interval elapsed
+   * (for instance, if `fps` property is set to 60, once about every 16ms).
+   *
+   * 1. Updates each scene in turn;
+   * 2. Renders each scene in turn.
+   *
+   * @param {number} time The current time; a high-resolution timer value, as it comes from `window.requestAnimationFrame()`.
+   * @param {number} delta The delta time in ms since the last animation interval.
+   */
+  step( time, delta) {
+    this.updateTimings( delta);
+    if( this.needsResize()) { this.resize(); }
+    // this.scenes.update( time, delta);
+    // this.cameras.update( time, delta);
+    // this._renderer.render( currentScene, currentCamera);
   }
 
   /**
@@ -179,24 +194,6 @@ export class ThreeApp extends LitElement {
   }
 
   /**
-   * The main animation step, which actually updates the scenes and renders them.
-   * Called automatically from `tick()`, every time the animation interval elapsed
-   * (for instance, if `fps` property is set to 60, once about every 16ms).
-   *
-   * 1. Updates each scene in turn;
-   * 2. Renders each scene in turn.
-   *
-   * @param {number} time The current time; a high-resolution timer value, as it comes from `window.requestAnimationFrame()`.
-   * @param {number} delta The delta time in ms since the last animation interval.
-   */
-  stepCallback( time, delta) {
-    if( this.needsResize()) { this.resize(); }
-    // this.scenes.update( time, delta);
-    // this.cameras.update( time, delta);
-    // this.renderers.render();
-  }
-
-  /**
    * Returns the client width and height, as computed by the browser,
    * and display ratio, of our canvas.
    */
@@ -212,7 +209,7 @@ export class ThreeApp extends LitElement {
    * the renderer does not match the actual client size of our canvas;
    * false otherwise.
    */
-  needsResizeCallback() {
+  needsResize() {
     const { width, height } = this.getDisplaySize();
     const renderSize = this._renderer.getSize();
     return( renderSize.width !== width || renderSize.height !== height);
@@ -223,7 +220,7 @@ export class ThreeApp extends LitElement {
    * as well as the aspect ratio and the projection matrix of all cameras,
    * to match the actual client size of our canvas.
    */
-  resizeCallback() {
+  resize() {
     const { width, height, ratio } = this.getDisplaySize();
     console.log( `three-app › resize() to ${width}x${height}px (ratio of 1:${ratio})`);
 
