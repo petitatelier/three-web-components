@@ -9,10 +9,11 @@
   <link rel="stylesheet" href="demo-component.css">
   <style>
     .fullbleed { margin: 0; height: 100vh }
-    main, three-app { height: 100% }
+    .vflex { display: flex; flex-direction: row }
+    .vfill { flex-grow: 1 }
   </style>
 </head>
-<body class="unresolved fullbleed">
+<body class="unresolved vflex fullbleed">
   <noscript>Please enable JavaScript to view this website.</noscript>
 
   <header>
@@ -20,8 +21,8 @@
     <span> › Element ‹three-app›</span>
   </header>
 
-  <main>
-    <three-app fps="10"></three-app>
+  <main class="vflex vfill">
+    <three-app class="vflex vfill" fps="10"></three-app>
   </main>
 
   <script>

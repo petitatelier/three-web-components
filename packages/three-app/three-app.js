@@ -7,9 +7,9 @@ export class ThreeApp extends LitElement {
 
   static get styles() {
     return css`
-      :host { display: flex; flex-direction: column; position: relative }
+      :host { position: relative }
       :host([ hidden]) { display: none }
-      #display { height: 100% }
+      #display { width: 100% }
       #info { position: absolute; top: 1em; right: 1em; color: white }
       #info > * { margin: 0 0 1em }
     `;
