@@ -1,5 +1,7 @@
 import { LitElement, html, css } from "lit-element";
 
+const DEFAULTS = { fps: 60 };
+
 export class ThreeApp extends LitElement {
 
   static get styles() {
@@ -12,7 +14,7 @@ export class ThreeApp extends LitElement {
   render() {
     return html`
       <h1>ThreeApp</h1>
-      <p>Desired ${this.fps} FPS (a frame about every ${this._interval} ms).</p>
+      <p>Desired ${this.fps} FPS (a frame about every ${this.interval} ms).</p>
     `;
   }
 
@@ -26,13 +28,14 @@ export class ThreeApp extends LitElement {
     };
   }
 
-  // Getter and setter for FPS property:
-  // computes derived internal `_interval` property
+  // Getter and setter for the `fps` property: observes changes
+  // and on change, re-computes derived internal `_interval` property.
   get fps() { return this._fps; }
   set fps( newVal) {
     const oldVal = this._fps;
-    this._fps = Math.floor( newVal); // FPS
-    this._interval = Math.floor( 1000 / this._fps); // ms
+    // newVal is set to `null` by Lit-Element, when attribute is removed
+    this._fps = (newVal == null) ? DEFAULTS.fps : Math.floor( newVal);
+    this.interval = Math.floor( 1000 / this._fps); // ms
     this.requestUpdate( "fps", oldVal);
   }
 
@@ -44,13 +47,14 @@ export class ThreeApp extends LitElement {
     super();
 
     // Bind callback methods to this instance
+    this.tick = this.tickCallback.bind( this);
     this.step = this.stepCallback.bind( this);
     this.needsResize = this.needsResizeCallback.bind( this);
     this.resize = this.resizeCallback.bind( this);
 
     // Initialize internal properties
     this._fps = undefined;
-    this._interval = undefined;
+    this.interval = undefined;
     this.time = undefined;
     this.lastTime = undefined;
     this.scenes = [];
@@ -59,7 +63,7 @@ export class ThreeApp extends LitElement {
     this.renderers = [];
 
     // Initialize public properties
-    this.fps = 60; // triggers computation of this._interval
+    this.fps = DEFAULTS.fps; // will trigger computation of this._interval
 
     // Start the animation
     this.start();
@@ -74,35 +78,50 @@ export class ThreeApp extends LitElement {
   }
 
   /**
-   * The main animation step. Called automatically once per browser frame,
+   * The main animation step, which actually updates the scenes and renders them.
+   * Called automatically from `tick()`, every time the animation interval elapsed
+   * (for instance, if `fps` property is set to 60, once about every 16ms).
+   *
+   * 1. Updates each scene in turn;
+   * 2. Renders each scene in turn.
+   *
+   * @param {number} time The current time; a high-resolution timer value, as it comes from `window.requestAnimationFrame()`.
+   * @param {number} delta The delta time in ms since the last animation interval.
+   */
+  stepCallback( time, delta) {
+    // console.log( { time, delta, lastTime: this.lastTime, fps: this.fps });
+    if( this.needsResize()) { this.resize(); }
+    // this.scenes.update( time, delta);
+    // this.cameras.update( time, delta);
+    // this.renderers.render();
+  }
+
+  /**
+   * The main animation timer. Called automatically once per browser frame,
    * as a result of `window.requestAnimationFrame()`. Actions performed:
    *
    * 1. Updates the local tick value;
-   * 2. Updates each scene in turn;
-   * 3. Renders each scene in turn;
+   * 2. Updates and renders each scene in turn, if animation interval elapsed;
    * 3. Schedules another call to requestAnimationFrame.
    *
-   * @param {number} time The current time; a high-resolution timer value, as it comes from `window.performance.now()`.
-   * @param {number} delta The delta time in ms since the last frame; a smoothed and capped value based on the FPS rate.
+   * @param {number} time The current time; a high-resolution timer value,
+   *   as it comes from `window.requestAnimationFrame()`.
    */
-  stepCallback( ignoredTime) {
-    this.time = window.performance.now();
-    const delta = this.time - this.lastTime;
+  tickCallback( time) {
+    this.time = time;
+    const delta = time - this.lastTime;
 
-    if( delta >= this._interval) {
-      if( this.needsResize()) { this.resize(); }
-      // this.scenes.update( time, delta);
-      // this.cameras.update( time, delta);
-      // this.renderers.render();
+    if( delta >= this.interval) {
+      this.step( time, delta);
       this.lastTime = this.time;
     }
 
-    window.requestAnimationFrame( this.step); // `this.step()` is the `stepCallback()` bound to each instance of this class; see constructor
+    window.requestAnimationFrame( this.tick); // `this.tick()` is the `tickCallback()` bound to each instance of this class; see constructor
   }
 
   start() {
     this.lastTime = 0;
-    window.requestAnimationFrame( this.step);
+    window.requestAnimationFrame( this.tick);
   }
 
   needsResizeCallback() {
