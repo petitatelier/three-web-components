@@ -7,8 +7,12 @@
   <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
   <script type="module" src="../node_modules/@petitatelier/three-app/three-app.js"></script>
   <link rel="stylesheet" href="demo-component.css">
+  <style>
+    .fullbleed { margin: 0; height: 100vh }
+    main, three-app { height: 100% }
+  </style>
 </head>
-<body class="unresolved">
+<body class="unresolved fullbleed">
   <noscript>Please enable JavaScript to view this website.</noscript>
 
   <header>
@@ -17,7 +21,7 @@
   </header>
 
   <main>
-    <three-app fps="50"></three-app>
+    <three-app fps="10"></three-app>
   </main>
 
   <script>
