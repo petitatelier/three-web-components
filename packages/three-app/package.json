@@ -1,6 +1,6 @@
 {
   "name": "@petitatelier/three-app",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0",
   "description": "Three app container, that provides animation timing and registry of renderers and scenes",
   "author": "Olivier Lange",
   "license": "BSD-3-Clause",
