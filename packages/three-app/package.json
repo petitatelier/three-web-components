@@ -1,7 +1,7 @@
 {
   "name": "@petitatelier/three-app",
   "version": "0.1.0",
-  "description": "Three app container, that provides animation timing and registry of renderers and scenes",
+  "description": "Three app container, that provides animation timing and registry of scenes and cameras",
   "author": "Olivier Lange",
   "license": "BSD-3-Clause",
   "main": "three-app.js",
@@ -20,8 +20,11 @@
     "type": "git",
     "url": "git+https://github.com/olange/three-web-components.git"
   },
+  "bugs": {
+    "url": "https://github.com/olange/three-web-components/issues"
+  },
+  "homepage": "https://github.com/olange/three-web-components/tree/master/packages/three-app#readme",
   "publishConfig": {
     "access": "public"
-  },
-  "private": true
+  }
 }
