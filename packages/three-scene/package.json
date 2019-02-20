@@ -1,0 +1,31 @@
+{
+  "name": "@petitatelier/three-scene",
+  "version": "0.1.0",
+  "description": "Defines the ‹three-scene› element, that can be rendered and to which objects can be added",
+  "author": "Olivier Lange",
+  "license": "BSD-3-Clause",
+  "main": "three-scene.js",
+  "scripts": {},
+  "dependencies": {
+    "lit-element": "^2.0.1",
+    "lit-html": "^1.0.0",
+    "three": "^0.101.1"
+  },
+  "keywords": [
+    "three.js",
+    "webcomponent",
+    "3d",
+    "scene"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olange/three-web-components.git"
+  },
+  "bugs": {
+    "url": "https://github.com/olange/three-web-components/issues"
+  },
+  "homepage": "https://github.com/olange/three-web-components/tree/master/packages/three-scene#readme",
+  "publishConfig": {
+    "access": "public"
+  }
+}
