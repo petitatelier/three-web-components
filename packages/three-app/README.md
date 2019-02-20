@@ -1,6 +1,6 @@
-# \<three-app\>
+# ‹three-app› element
 
-Three.js app container, that provides animation timing and registry of canvases, renderers, cameras and scenes — allowing to synchronize animation and rendering of all its objects.
+Three.js app container, that provides animation timing and a registry of cameras and scenes — and synchronizes animation and rendering of the scenes.
 
 ## Features
 
