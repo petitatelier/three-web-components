@@ -1,7 +1,9 @@
 import { LitElement, html, css } from "lit-element";
 import * as THREE from "three";
 
-const DEFAULTS = { fps: 60 };
+export const DefaultOptions = Object.freeze({
+  fps: 60
+});
 
 export class ThreeApp extends LitElement {
 
@@ -42,7 +44,7 @@ export class ThreeApp extends LitElement {
   set fps( newVal) {
     const oldVal = this._fps;
     // newVal is set to `null` by Lit-Element, when attribute is removed
-    this._fps = (newVal == null) ? DEFAULTS.fps : Math.floor( newVal);
+    this._fps = (newVal == null) ? DefaultOptions.fps : Math.floor( newVal);
     this._interval = Math.floor( 1000 / this._fps); // ms
     this.requestUpdate( "fps", oldVal);
   }
@@ -77,7 +79,7 @@ export class ThreeApp extends LitElement {
     this.cameras = [];
 
     // Initialize public properties (must come after internal properties)
-    this.fps = DEFAULTS.fps; // will trigger computation of this._interval
+    this.fps = DefaultOptions.fps;    // setting property `fps` will trigger computation of derived `_interval` property
   }
 
   /**
@@ -201,7 +203,7 @@ export class ThreeApp extends LitElement {
     const width  = this._canvas.clientWidth,
           height = this._canvas.clientHeight,
           ratio  = width / height;
-    return { width, height, ratio };
+    return { width, height, ratio };
   }
 
   /**
@@ -210,7 +212,7 @@ export class ThreeApp extends LitElement {
    * false otherwise.
    */
   needsResize() {
-    const { width, height } = this.getDisplaySize();
+    const { width, height } = this.getDisplaySize();
     const renderSize = this._renderer.getSize();
     return( renderSize.width !== width || renderSize.height !== height);
   }
