@@ -275,8 +275,8 @@ export class ThreeApp extends LitElement {
     this._scenes.forEach(( elt) => elt.step( time, delta));
     this._cameras.forEach(( elt) => elt.step( time, delta));
     this._renderer.render(
-      this._activeScene.getScene(),
-      this._activeCamera.getCamera());
+      this._activeScene.scene,
+      this._activeCamera.camera);
   }
 
   /**

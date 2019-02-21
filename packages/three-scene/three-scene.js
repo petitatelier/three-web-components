@@ -30,6 +30,10 @@ export class ThreeScene extends LitElement {
     `;
   }
 
+  get scene() {
+    return this._scene;
+  }
+
   static get properties() {
     return {
       id: { type: String }  // Identifier of the scene in the animation
@@ -79,10 +83,6 @@ export class ThreeScene extends LitElement {
       this._scene.dispose(); // Clears scene related data internally cached by WebGLRenderer
       this._scene = undefined;
     }
-  }
-
-  getScene() {
-    return this._scene;
   }
 
   connectedCallback() {

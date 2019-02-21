@@ -43,6 +43,10 @@ export class ThreeCamera extends LitElement {
     `;
   }
 
+  get camera() {
+    return this._camera;
+  }
+
   /**
    * Attributes and properties observed by Lit-Element.
    */
@@ -120,10 +124,6 @@ export class ThreeCamera extends LitElement {
     console.log( `three-camera[${this.id}] › updateCamera()`, newOptions, oldOptions);
     Object.assign( this._camera, newOptions);
     this._camera.updateProjectionMatrix();
-  }
-
-  getCamera() {
-    return this._camera;
   }
 
   /**
