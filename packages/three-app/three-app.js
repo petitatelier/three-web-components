@@ -57,6 +57,20 @@ export class ThreeApp extends LitElement {
     this.requestUpdate( "fps", oldVal);
   }
 
+  /**
+   * Getter which returns the map of registered ‹three-scene› elements.
+   */
+  get scenes() {
+    return this._scenes;
+  }
+
+  /**
+   * Getter which returns the map of registered ‹three-camera› elements.
+   */
+  get cameras() {
+    return this._cameras;
+  }
+
   // Getter and setter for the `scene` property: from given scene
   // _identifier_, recomputes internal `_activeScene` property,
   // which holds a reference to the matching _scene element_
