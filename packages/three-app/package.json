@@ -8,6 +8,7 @@
   "scripts": {},
   "dependencies": {
     "@petitatelier/three-camera": "^0.1.0",
+    "@petitatelier/three-scene": "^0.1.0",
     "lit-element": "^2.0.1",
     "lit-html": "^1.0.0",
     "three": "^0.101.1"

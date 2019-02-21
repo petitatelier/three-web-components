@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit-element";
 import { Events as CameraEvents } from "@petitatelier/three-camera";
+import { Events as SceneEvents } from "@petitatelier/three-scene";
 import * as THREE from "three";
 
 export const Default = Object.freeze({
@@ -62,9 +63,11 @@ export class ThreeApp extends LitElement {
     // Bind callback methods to this instance
     this.tick = this.tick.bind( this);
 
-    // Listen to camera events
+    // Listen to camera and scene events
     this.addEventListener( CameraEvents.cameraConnected, this.registerCamera);
     this.addEventListener( CameraEvents.cameraDisconnected, this.deregisterCamera);
+    this.addEventListener( SceneEvents.sceneConnected, this.registerScene);
+    this.addEventListener( SceneEvents.sceneDisconnected, this.deregisterScene);
 
     // Initialize internal properties
     this._initialized = false;
@@ -132,11 +135,12 @@ export class ThreeApp extends LitElement {
     // Update size of the display buffer of the renderer
     this.resize();
 
-    // Initialize the children ‹three-camera elements (which will in turn
-    // register themselves with this parent ‹three-app›, by dispatching
-    // custom events, @see the `registerCamera()` event listener)
-    const cameraChildrenElements = this.querySelectorAll( "three-camera");
-    cameraChildrenElements.forEach(( cameraElement) => cameraElement.init());
+    // Initialize the children ‹three-camera› and ‹three-scene› elements
+    // (which in turn will register themselves with this parent ‹three-app›,
+    // by dispatching custom events — @see the `registerCamera()` and
+    // `registerScene()` event listeners)
+    const cameraAndSceneElements = this.querySelectorAll( "three-camera, three-scene");
+    cameraAndSceneElements.forEach(( elt) => elt.init());
 
     // From now on, `start()` can be called to animate and render the scenes
     this._initialized = true;
@@ -293,6 +297,24 @@ export class ThreeApp extends LitElement {
     const { id } = cameraDisconnectedEvent.detail.camera;
     console.log( `three-app › deregisterCamera( ${id})`);
     this._cameras.delete( id);
+  }
+
+  registerScene( sceneConnectedEvent) {
+    const { scene } = sceneConnectedEvent.detail;
+    const { id } = scene;
+    console.log( `three-app › registerScene( ${id})`);
+
+    // Register the scene (as a reference to the ‹three-scene element)
+    this._scenes.set( id, scene);
+  }
+
+  /**
+   * @param {CustomEvent} sceneDisconnectedEvent
+   */
+  deregisterScene( sceneDisconnectedEvent) {
+    const { id } = sceneDisconnectedEvent.detail.scene;
+    console.log( `three-app › deregisterScene( ${id})`);
+    this._scenes.delete( id);
   }
 }
 
