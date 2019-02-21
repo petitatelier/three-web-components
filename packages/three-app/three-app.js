@@ -36,7 +36,11 @@ export class ThreeApp extends LitElement {
   static get properties() {
     return {
       /** Desired FPS */
-      fps: { type: Number, reflect: true }
+      fps: { type: Number, reflect: true },
+      /** Identifier of active scene, to be rendered in next frame */
+      scene: { type: String, reflect: true },
+      /** Identifier of active camera, to be used to render in next frame */
+      camera: { type: String, reflect: true }
     };
   }
 
@@ -46,9 +50,65 @@ export class ThreeApp extends LitElement {
   set fps( newVal) {
     const oldVal = this._fps;
     // newVal is set to `null` by Lit-Element, when attribute is removed
-    this._fps = (newVal == null) ? Default.fps : Math.floor( newVal);
+    this._fps = (newVal === null) ? Default.fps : Math.floor( newVal);
     this._interval = Math.floor( 1000 / this._fps); // ms
     this.requestUpdate( "fps", oldVal);
+  }
+
+  // Getter and setter for the `scene` property: from given scene
+  // _identifier_, recomputes internal `_activeScene` property,
+  // which holds a reference to the matching _scene element_
+  // from the map of registered scenes `this._scenes`.
+  get scene() {
+    return( typeof this._activeScene !== "undefined")
+      ? this._activeScene.id : undefined;
+  }
+  set scene( newSceneRefId) {
+    // Lookup the scene identifier in the map of registered
+    // scene elements and store a reference to this scene element
+    if( newSceneRefId !== null) {
+      // `.get()` will return undefined, if the `_scenes` Map does not contain key
+      this._activeScene = this._scenes.get( newSceneRefId);
+    }
+    // If the scene identifier was null (which means the observed
+    // attribute `scene` was removed from the element) or if no scene
+    // matched the identifier in the map of registered scenes, default
+    // to the first registered scene — and if there would be none,
+    // have the `_activeScene` become undefined.
+    if( newSceneRefId === null
+        || typeof this._activeScene === "undefined") {
+      // `.next().value` will be undefined, if the `_scenes` Map is empty
+      const firstScene = this._scenes.values().next().value;
+      this._activeScene = firstScene;
+    }
+  }
+
+  // Getter and setter for the `scene` property: from given scene
+  // _identifier_, recomputes internal `_activeScene` property,
+  // which holds a reference to the matching _scene element_
+  // from the map of registered scenes `this._scenes`.
+  get camera() {
+    return( typeof this._activeCamera !== "undefined")
+      ? this._activeCamera.id : undefined;
+  }
+  set camera( newCameraRefId) {
+    // Lookup the camera identifier in the map of registered
+    // camera elements and store a reference to this camera element
+    if( newCameraRefId !== null) {
+      // `.get()` will return undefined, if the `_cameras` Map does not contain key
+      this._activeCamera = this._cameras.get( newCameraRefId);
+    }
+    // If the camera identifier was null (which means the observed
+    // attribute `camera` was removed from the element) or if no camera
+    // matched the identifier in the map of registered camera, default
+    // to the first registered camera — and if there would be none,
+    // have the `_activeCamera` become undefined.
+    if( newCameraRefId === null
+        || typeof this._activeCamera === "undefined") {
+      // `.next().value` will be undefined, if the `_camera` Map is empty
+      const firstCamera = this._cameras.values().next().value;
+      this._activeCamera = firstCamera;
+    }
   }
 
   /**
@@ -85,6 +145,8 @@ export class ThreeApp extends LitElement {
 
     this._scenes = new Map();
     this._cameras = new Map();
+    this._activeScene = undefined;
+    this._activeCamera = undefined;
 
     // Initialize public properties (must come after internal properties)
     this.fps = Default.fps;    // setting property `fps` will trigger computation of derived `_interval` property
@@ -190,7 +252,8 @@ export class ThreeApp extends LitElement {
    * Called automatically from `tick()`, every time the animation interval elapsed
    * (for instance, if `fps` property is set to 60, once about every 16ms).
    *
-   * 1. Updates each scene in turn;
+   * 1. Resizes the display buffer of the renderer, if the canvas was resized;
+   * 2. Updates each scene and camera in turn;
    * 2. Renders each scene in turn.
    *
    * @param {number} time The current time; a high-resolution timer value, as it comes from `window.requestAnimationFrame()`.
@@ -199,9 +262,11 @@ export class ThreeApp extends LitElement {
   step( time, delta) {
     this.updateTimings( delta);
     if( this.needsResize()) { this.resize(); }
-    // this._scenes.update( time, delta);
-    // this._cameras.update( time, delta);
-    // this._renderer.render( currentScene, currentCamera);
+    this._scenes.forEach(( elt) => elt.step( time, delta));
+    this._cameras.forEach(( elt) => elt.step( time, delta));
+    this._renderer.render(
+      this._activeScene.getScene(),
+      this._activeCamera.getCamera());
   }
 
   /**
@@ -263,8 +328,8 @@ export class ThreeApp extends LitElement {
   }
 
   /**
-   * Event-listener that registers a reference to the THREE.Camera object sent
-   * from an ‹three-camera› element, that was connected in the DOM.
+   * Event-listener that registers the reference to the ‹three-camera›
+   * element, that fired this event.
    *
    * @param {CustomEvent} cameraConnectedEvent
    */
@@ -275,6 +340,11 @@ export class ThreeApp extends LitElement {
 
     // Register the camera (as a reference to the ‹three-camera› element)
     this._cameras.set( id, camera);
+
+    // Set it as the active camera, if there is none yet active
+    if( typeof this.camera === "undefined") {
+      this.camera = id;
+    }
 
     // If the display canvas was initialized and its aspect ratio is known,
     // set the frustrum aspect ratio of the camera accordingly — the camera
@@ -288,8 +358,8 @@ export class ThreeApp extends LitElement {
   }
 
   /**
-   * Event-listener that deregisters the reference to the THREE.Camera object
-   * from an ‹three-camera› element, that was disconnected from the DOM.
+   * Event-listener that deregisters the reference to the ‹three-camera›
+   * element, that fired this event.
    *
    * @param {CustomEvent} cameraDisconnectedEvent
    */
@@ -297,8 +367,16 @@ export class ThreeApp extends LitElement {
     const { id } = cameraDisconnectedEvent.detail.camera;
     console.log( `three-app › deregisterCamera( ${id})`);
     this._cameras.delete( id);
+    this.camera = null; // setter will default to first remaining camera
   }
 
+  /**
+   * Event-listener that registers the reference to the ‹three-scene›
+   * element, that fired this event, and sets it as the active scene,
+   * if there was no active scene previously defined.
+   *
+   * @param {CustomEvent} sceneConnectedEvent
+   */
   registerScene( sceneConnectedEvent) {
     const { scene } = sceneConnectedEvent.detail;
     const { id } = scene;
@@ -306,15 +384,25 @@ export class ThreeApp extends LitElement {
 
     // Register the scene (as a reference to the ‹three-scene element)
     this._scenes.set( id, scene);
+
+    // Set it as the active scene, if there is none yet active
+    if( typeof this.scene === "undefined") {
+      this.scene = id;
+    }
   }
 
   /**
+   * Event-listener that deregisters the reference to the ‹three-scene›
+   * element, that fired this event, and set the active scene to the
+   * first remaining (if any, otherwise `scene` becomes undefined).
+   *
    * @param {CustomEvent} sceneDisconnectedEvent
    */
   deregisterScene( sceneDisconnectedEvent) {
     const { id } = sceneDisconnectedEvent.detail.scene;
     console.log( `three-app › deregisterScene( ${id})`);
     this._scenes.delete( id);
+    this.scene = null; // setter will default to first remaining scene
   }
 }
 

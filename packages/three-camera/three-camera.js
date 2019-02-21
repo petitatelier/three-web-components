@@ -75,6 +75,13 @@ export class ThreeCamera extends LitElement {
     this.registerCamera();
   }
 
+  /**
+   * Override, to programmatically animate the camera.
+   */
+  step( time, delta) {
+    // console.log( `three-camera[${this.id}] › step(${time}, ${delta})`);
+  }
+
   updated( changedProperties) {
     console.log( `three-camera[${this.id}] › updated()`, changedProperties);
     if( changedProperties.has( "type")) {
@@ -113,6 +120,10 @@ export class ThreeCamera extends LitElement {
     console.log( `three-camera[${this.id}] › updateCamera()`, newOptions, oldOptions);
     Object.assign( this._camera, newOptions);
     this._camera.updateProjectionMatrix();
+  }
+
+  getCamera() {
+    return this._camera;
   }
 
   /**

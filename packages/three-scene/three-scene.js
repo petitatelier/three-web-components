@@ -55,6 +55,13 @@ export class ThreeScene extends LitElement {
     this.registerScene();
   }
 
+  /**
+   * Override, to programmatically animate the scene.
+   */
+  step( time, delta) {
+    // console.log( `three-scene[${this.id}] › step(${time}, ${delta})`);
+  }
+
   updated( changedProperties) {
     console.log( `three-scene[${this.id}] › updated()`, changedProperties);
     this.disposeScene();
@@ -72,6 +79,10 @@ export class ThreeScene extends LitElement {
       this._scene.dispose(); // Clears scene related data internally cached by WebGLRenderer
       this._scene = undefined;
     }
+  }
+
+  getScene() {
+    return this._scene;
   }
 
   connectedCallback() {
