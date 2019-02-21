@@ -1,7 +1,8 @@
 import { LitElement, html, css } from "lit-element";
+import { Events as CameraEvents } from "@petitatelier/three-camera";
 import * as THREE from "three";
 
-export const DefaultOptions = Object.freeze({
+export const Default = Object.freeze({
   fps: 60
 });
 
@@ -22,9 +23,9 @@ export class ThreeApp extends LitElement {
       <div id="info">
         <p>Desired: ${this.fps} FPS (a frame about every ${this._interval} ms)<br/>
           Actual: ${this._fpsActual} FPS (a frame about every ${this._intervalActual} ms)</p>
+        <slot></slot>
       </div>
       <canvas id="display"></canvas>
-      <slot></slot>
     `;
   }
 
@@ -44,7 +45,7 @@ export class ThreeApp extends LitElement {
   set fps( newVal) {
     const oldVal = this._fps;
     // newVal is set to `null` by Lit-Element, when attribute is removed
-    this._fps = (newVal == null) ? DefaultOptions.fps : Math.floor( newVal);
+    this._fps = (newVal == null) ? Default.fps : Math.floor( newVal);
     this._interval = Math.floor( 1000 / this._fps); // ms
     this.requestUpdate( "fps", oldVal);
   }
@@ -53,13 +54,17 @@ export class ThreeApp extends LitElement {
    * In the element constructor, assign default property values.
    */
   constructor() {
-    console.log( "three-app › constructor()");
-
     // Must call superconstructor first.
     super();
 
+    console.log( "three-app › constructor()");
+
     // Bind callback methods to this instance
     this.tick = this.tick.bind( this);
+
+    // Listen to camera events
+    this.addEventListener( CameraEvents.cameraConnected, this.registerCamera);
+    this.addEventListener( CameraEvents.cameraDisconnected, this.deregisterCamera);
 
     // Initialize internal properties
     this._initialized = false;
@@ -75,11 +80,21 @@ export class ThreeApp extends LitElement {
     this._time = undefined;           // computed by `this.tick()`
     this._lastTime = undefined;       // computed by `this.tick()`
 
-    this.scenes = [];
-    this.cameras = [];
+    this._scenes = new Map();
+    this._cameras = new Map();
 
     // Initialize public properties (must come after internal properties)
-    this.fps = DefaultOptions.fps;    // setting property `fps` will trigger computation of derived `_interval` property
+    this.fps = Default.fps;    // setting property `fps` will trigger computation of derived `_interval` property
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    console.log( "three-app › connectedCallback()");
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    console.log( "three-app › disconnectedCallback()");
   }
 
   /**
@@ -116,6 +131,12 @@ export class ThreeApp extends LitElement {
 
     // Update size of the display buffer of the renderer
     this.resize();
+
+    // Initialize the children ‹three-camera elements (which will in turn
+    // register themselves with this parent ‹three-app›, by dispatching
+    // custom events, @see the `registerCamera()` event listener)
+    const cameraChildrenElements = this.querySelectorAll( "three-camera");
+    cameraChildrenElements.forEach(( cameraElement) => cameraElement.init());
 
     // From now on, `start()` can be called to animate and render the scenes
     this._initialized = true;
@@ -174,8 +195,8 @@ export class ThreeApp extends LitElement {
   step( time, delta) {
     this.updateTimings( delta);
     if( this.needsResize()) { this.resize(); }
-    // this.scenes.update( time, delta);
-    // this.cameras.update( time, delta);
+    // this._scenes.update( time, delta);
+    // this._cameras.update( time, delta);
     // this._renderer.render( currentScene, currentCamera);
   }
 
@@ -200,10 +221,14 @@ export class ThreeApp extends LitElement {
    * and display ratio, of our canvas.
    */
   getDisplaySize() {
-    const width  = this._canvas.clientWidth,
-          height = this._canvas.clientHeight,
-          ratio  = width / height;
-    return { width, height, ratio };
+    if( typeof this._canvas === "undefined") {
+      return { width: undefined, height: undefined, ratio: undefined }
+    } else {
+      const width  = this._canvas.clientWidth,
+            height = this._canvas.clientHeight,
+            ratio  = width / height;
+      return { width, height, ratio };
+    }
   }
 
   /**
@@ -226,15 +251,48 @@ export class ThreeApp extends LitElement {
     const { width, height, ratio } = this.getDisplaySize();
     console.log( `three-app › resize() to ${width}x${height}px (ratio of 1:${ratio})`);
 
-    // Update the aspect and projection matrix of all cameras,
-    // to match the new display ratio
-    this.cameras.forEach(( camera) => {
-      camera.aspect = ratio;
-      camera.updateProjectionMatrix();
-    });
+    // Update the frustrum aspect ratio and projection matrix of all cameras
+    this._cameras.forEach( camera => camera.setAspectRatio( ratio));
 
     // Update the renderer display buffer, to match the new display size
     this._renderer.setSize( width, height, false);
+  }
+
+  /**
+   * Event-listener that registers a reference to the THREE.Camera object sent
+   * from an ‹three-camera› element, that was connected in the DOM.
+   *
+   * @param {CustomEvent} cameraConnectedEvent
+   */
+  registerCamera( cameraConnectedEvent) {
+    const { camera } = cameraConnectedEvent.detail;
+    const { id } = camera;
+    console.log( `three-app › registerCamera( ${id})`);
+
+    // Register the camera (as a reference to the ‹three-camera› element)
+    this._cameras.set( id, camera);
+
+    // If the display canvas was initialized and its aspect ratio is known,
+    // set the frustrum aspect ratio of the camera accordingly — the camera
+    // has otherwise no way of knowing the aspect ratio of the display canvas.
+    // Otherwise, the aspect ratio will be set once the canvas is resized
+    // (@see `resize()` method above).
+    const { ratio } = this.getDisplaySize();
+    if( ratio) {
+      camera.setAspectRatio( ratio);
+    }
+  }
+
+  /**
+   * Event-listener that deregisters the reference to the THREE.Camera object
+   * from an ‹three-camera› element, that was disconnected from the DOM.
+   *
+   * @param {CustomEvent} cameraDisconnectedEvent
+   */
+  deregisterCamera( cameraDisconnectedEvent) {
+    const { id } = cameraDisconnectedEvent.detail.camera;
+    console.log( `three-app › deregisterCamera( ${id})`);
+    this._cameras.delete( id);
   }
 }
 
