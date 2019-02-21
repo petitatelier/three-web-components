@@ -24,6 +24,8 @@ export class ThreeApp extends LitElement {
       <div id="info">
         <p>Desired: ${this.fps} FPS (a frame about every ${this._interval} ms)<br/>
           Actual: ${this._fpsActual} FPS (a frame about every ${this._intervalActual} ms)</p>
+        <p>Active camera: ${this.camera}</br>
+          Active scene: ${this.scene}</p>
         <slot></slot>
       </div>
       <canvas id="display"></canvas>
@@ -60,27 +62,31 @@ export class ThreeApp extends LitElement {
   // which holds a reference to the matching _scene element_
   // from the map of registered scenes `this._scenes`.
   get scene() {
-    return( typeof this._activeScene !== "undefined")
+    return (typeof this._activeScene !== "undefined")
       ? this._activeScene.id : undefined;
   }
-  set scene( newSceneRefId) {
+  set scene( newSceneId) {
+    const oldSceneId = (typeof this._activeScene !== "undefined")
+      ? this._activeScene.id : undefined;
+
     // Lookup the scene identifier in the map of registered
     // scene elements and store a reference to this scene element
-    if( newSceneRefId !== null) {
+    if( newSceneId !== null) {
       // `.get()` will return undefined, if the `_scenes` Map does not contain key
-      this._activeScene = this._scenes.get( newSceneRefId);
+      this._activeScene = this._scenes.get( newSceneId);
     }
     // If the scene identifier was null (which means the observed
     // attribute `scene` was removed from the element) or if no scene
     // matched the identifier in the map of registered scenes, default
     // to the first registered scene — and if there would be none,
     // have the `_activeScene` become undefined.
-    if( newSceneRefId === null
+    if( newSceneId === null
         || typeof this._activeScene === "undefined") {
       // `.next().value` will be undefined, if the `_scenes` Map is empty
       const firstScene = this._scenes.values().next().value;
       this._activeScene = firstScene;
     }
+    this.requestUpdate( "scene", oldSceneId);
   }
 
   // Getter and setter for the `scene` property: from given scene
@@ -88,10 +94,13 @@ export class ThreeApp extends LitElement {
   // which holds a reference to the matching _scene element_
   // from the map of registered scenes `this._scenes`.
   get camera() {
-    return( typeof this._activeCamera !== "undefined")
+    return (typeof this._activeCamera !== "undefined")
       ? this._activeCamera.id : undefined;
   }
   set camera( newCameraRefId) {
+    const oldCameraId = (typeof this._activeCamera !== "undefined")
+      ? this._activeCamera.id : undefined;
+
     // Lookup the camera identifier in the map of registered
     // camera elements and store a reference to this camera element
     if( newCameraRefId !== null) {
@@ -109,6 +118,7 @@ export class ThreeApp extends LitElement {
       const firstCamera = this._cameras.values().next().value;
       this._activeCamera = firstCamera;
     }
+    this.requestUpdate( "camera", oldCameraId);
   }
 
   /**
