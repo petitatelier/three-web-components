@@ -1,6 +1,6 @@
 {
   "name": "@petitatelier/three-scene",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Defines the ‹three-scene› element, that can be rendered and to which objects can be added",
   "author": "Olivier Lange",
   "license": "BSD-3-Clause",
