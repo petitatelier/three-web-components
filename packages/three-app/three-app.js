@@ -338,18 +338,14 @@ export class ThreeApp extends LitElement {
   }
 
   /**
-   * Updates the size of the display buffer of the renderer,
-   * as well as the aspect ratio and the projection matrix of all cameras,
-   * to match the actual client size of our canvas.
+   * Updates the size of the display buffer of the renderer, as well
+   * as the frustum aspect ratio and the projection matrix of all
+   * cameras, to match the actual client size of our canvas.
    */
   resize() {
     const { width, height, ratio } = this.getDisplaySize();
     console.log( `three-app › resize() to ${width}x${height}px (ratio of 1:${ratio})`);
-
-    // Update the frustrum aspect ratio and projection matrix of all cameras
-    this._cameras.forEach( camera => camera.setAspectRatio( ratio));
-
-    // Update the renderer display buffer, to match the new display size
+    this._cameras.forEach( camera => camera.updateAspectRatio( ratio));
     this._renderer.setSize( width, height, false);
   }
 
@@ -379,7 +375,7 @@ export class ThreeApp extends LitElement {
     // (@see `resize()` method above).
     const { ratio } = this.getDisplaySize();
     if( ratio) {
-      camera.setAspectRatio( ratio);
+      camera.updateAspectRatio( ratio);
     }
   }
 

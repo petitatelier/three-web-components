@@ -1,5 +1,5 @@
 import { LitElement, html, css } from "lit-element";
-import { PerspectiveCamera, OrthographicCamera, Vector3 } from "three";
+import { PerspectiveCamera, OrthographicCamera } from "three";
 
 export const CameraTypeEnum = Object.freeze({
   perspective: "perspective",
@@ -15,7 +15,9 @@ export const Default = Object.freeze({
       near: 1,
       far: 1000
     }
-  }
+  },
+  position: [ 0, -5, 2 ],
+  lookAt: [ 0, 0, 0 ]
 });
 
 export const Events = Object.freeze({
@@ -54,7 +56,9 @@ export class ThreeCamera extends LitElement {
     return {
       id: { type: String },                     // Identifier of the camera in the animation
       type: { type: String, reflect: true },    // Either `perspective` or `orthographic`
-      options: { type: Object, reflect: true }  // Camera settings, depending on camera type
+      options: { type: Object, reflect: true }, // Camera settings, depending on camera type
+      position: { type: Array, reflect: true }, // Camera position at [ x, y, z ]
+      lookAt: { type: Array, reflect: true, attribute: "look-at" }  // Camera looking at [ x, y, z ]
     };
   }
 
@@ -71,6 +75,8 @@ export class ThreeCamera extends LitElement {
     this.id = Default.id;
     this.type = CameraTypeEnum.perspective;
     this.options = Default.options.perspectiveCamera;
+    this.position = Default.position;
+    this.lookAt = Default.lookAt;
   }
 
   init() {
@@ -86,6 +92,14 @@ export class ThreeCamera extends LitElement {
     // console.log( `three-camera[${this.id}] › step(${time}, ${delta})`);
   }
 
+  /**
+   * Will be called after `firstUpdated()` — that is, upon element
+   * creation —, as well as each time any attribute/property of
+   * the element was changed.
+   *
+   * @param {Map} changedProperties Keys are the names of changed
+   *   properties; values are the corresponding _previous_ values.
+   */
   updated( changedProperties) {
     console.log( `three-camera[${this.id}] › updated()`, changedProperties);
     if( changedProperties.has( "type")) {
@@ -97,8 +111,14 @@ export class ThreeCamera extends LitElement {
       if( changedProperties.has( "options")) {
         const newOptions = this.options,
               oldOptions = changedProperties.get( "options");
-        this.updateCamera( newOptions, oldOptions);
+        this.updateOptions( newOptions, oldOptions);
       }
+    }
+    if( changedProperties.has( "position")) {
+      this.updatePosition( this.position);
+    }
+    if( changedProperties.has( "lookAt")) {
+      this.updateDirection( this.lookAt);
     }
   }
 
@@ -107,8 +127,6 @@ export class ThreeCamera extends LitElement {
     if( type === CameraTypeEnum.perspective) {
       const { fov, aspect, near, far } = options;
       this._camera = new PerspectiveCamera( fov, aspect, near, far);
-      this._camera.position.set( 0, -5, 2);
-      this._camera.lookAt( new Vector3( 0, 0, 0));
     } else {
       const { left, right, top, bottom, near, far } = options;
       this._camera = new OrthographicCamera( left, right, top, bottom, near, far);
@@ -122,9 +140,41 @@ export class ThreeCamera extends LitElement {
     }
   }
 
-  updateCamera( newOptions, oldOptions) {
-    console.log( `three-camera[${this.id}] › updateCamera()`, newOptions, oldOptions);
+  updateOptions( newOptions, oldOptions) {
+    console.log( `three-camera[${this.id}] › updateOptions()`, newOptions, oldOptions);
     Object.assign( this._camera, newOptions);
+    this._camera.updateProjectionMatrix();
+  }
+
+  updatePosition( position, lookAt) {
+    console.log( `three-camera[${this.id}] › updatePosition()`, position);
+    if( typeof position !== "undefined") {
+      const [ x, y, z ] = position;
+      this._camera.position.set( x, y, z); }
+  }
+
+  updateDirection( lookAt) {
+    console.log( `three-camera[${this.id}] › updateDirection()`, lookAt);
+    if( typeof lookAt !== "undefined") {
+      const [ x, y, z ] = lookAt;
+      this._camera.lookAt( x, y, z);
+    }
+  }
+
+  /**
+   * Sets the frustrum aspect ratio of the camera and updates its
+   * projection matrix accordingly.
+   *
+   * Intended to be called from ‹three-app› parent element, upon registration
+   * of the camera with it, or when the display canvas is resized, as the
+   * frustrum aspect ratio should match the aspect ratio of the display canvas
+   * and only this parent ‹three-app› knows it.
+   *
+   * @param {Float} ratio  New camera frustrum aspect ratio.
+   */
+  updateAspectRatio( ratio) {
+    console.log( `three-camera[${this.id}] › updateAspectRatio(${ratio})`);
+    this._camera.aspect = ratio;
     this._camera.updateProjectionMatrix();
   }
 
@@ -173,23 +223,6 @@ export class ThreeCamera extends LitElement {
       bubbles: true
     });
     this.dispatchEvent( cameraDisconnected);
-  }
-
-  /**
-   * Sets the frustrum aspect ratio of the camera and updates its
-   * projection matrix accordingly.
-   *
-   * Intended to be called from ‹three-app› parent element, upon registration
-   * of the camera with it, or when the display canvas is resized, as the
-   * frustrum aspect ratio should match the aspect ratio of the display canvas
-   * and only this parent ‹three-app› knows it.
-   *
-   * @param {Float} ratio  New camera frustrum aspect ratio.
-   */
-  setAspectRatio( ratio) {
-    console.log( `three-camera[${this.id}] › setAspectRatio(${ratio})`);
-    this._camera.aspect = ratio;
-    this._camera.updateProjectionMatrix();
   }
 }
 
