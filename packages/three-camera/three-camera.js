@@ -2,8 +2,8 @@ import { LitElement, html, css } from "lit-element";
 import { PerspectiveCamera, OrthographicCamera } from "three";
 
 export const CameraTypeEnum = Object.freeze({
-  perspective: "perspective",
-  orthographic: "orthographic"
+  perspectiveCamera: "perspective",
+  orthographicCamera: "orthographic"
 });
 
 export const Default = Object.freeze({
@@ -11,10 +11,15 @@ export const Default = Object.freeze({
   options: {
     perspectiveCamera: {
       fov: 45,
-      aspect: 0, // TODO
+      aspect: 1, // NOTE: will be defined during `init()`, called by parent ‹three-app› element
       near: 1,
       far: 1000
-    }
+    },
+    orthographicCamera: {
+      left: -10, right: 10,
+      top: 10, bottom: -10,
+      near: 0, far: 1000
+    },
   },
   position: [ 0, -5, 2 ],
   lookAt: [ 0, 0, 0 ]
@@ -73,7 +78,7 @@ export class ThreeCamera extends LitElement {
 
     // Initialize public properties
     this.id = Default.id;
-    this.type = CameraTypeEnum.perspective;
+    this.type = CameraTypeEnum.perspectiveCamera;
     this.options = Default.options.perspectiveCamera;
     this.position = Default.position;
     this.lookAt = Default.lookAt;
@@ -124,7 +129,7 @@ export class ThreeCamera extends LitElement {
 
   createCamera( type, options) {
     console.log( `three-camera[${this.id}] › createCamera()`, type, options);
-    if( type === CameraTypeEnum.perspective) {
+    if( type === CameraTypeEnum.perspectiveCamera) {
       const { fov, aspect, near, far } = options;
       this._camera = new PerspectiveCamera( fov, aspect, near, far);
     } else {
@@ -146,7 +151,7 @@ export class ThreeCamera extends LitElement {
     this._camera.updateProjectionMatrix();
   }
 
-  updatePosition( position, lookAt) {
+  updatePosition( position) {
     console.log( `three-camera[${this.id}] › updatePosition()`, position);
     if( typeof position !== "undefined") {
       const [ x, y, z ] = position;
