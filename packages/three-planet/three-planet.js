@@ -3,7 +3,8 @@ import { AmbientLight, SphereGeometry, Mesh, MeshPhongMaterial, TextureLoader } 
 
 export const Default = Object.freeze({
   id: "defaultPlanet",
-  position: [ 0, 0, 0 ]
+  position: [ 0, 0, 0 ],
+  rotation: [ Math.PI / 2, 0, 0 ]
 });
 
 export class ThreePlanet extends ThreeObject {
@@ -15,6 +16,7 @@ export class ThreePlanet extends ThreeObject {
     return {
       id: { type: String },                     // Identifier of the camera in the animation
       position: { type: Array, reflect: true }, // Planet position at [ x, y, z ]
+      rotation: { type: Array, reflect: true }, // Planet rotated on axis [ x, y, z ] (in radians)
     };
   }
 
@@ -27,6 +29,7 @@ export class ThreePlanet extends ThreeObject {
     // Initialize public properties
     this.id = Default.id;
     this.position = Default.position;
+    this.rotation = Default.rotation;
 
     // Initialize private properties
     this._textureLoader = new TextureLoader();
@@ -44,7 +47,6 @@ export class ThreePlanet extends ThreeObject {
 
     this._sphere = new Mesh( sphereGeometry, earthMaterial);
     this._sphere.name = `${this.id}:sphere`;
-    this._sphere.rotation.x = Math.PI / 2;
 
     this._light = new AmbientLight( 0xFFFFFF); // soft white light
     this._light.name = `${this.id}:light`;
@@ -63,6 +65,9 @@ export class ThreePlanet extends ThreeObject {
     if( changedProperties.has( "position")) {
       this.updatePosition( this.position);
     }
+    if( changedProperties.has( "rotation")) {
+      this.updateRotation( this.rotation);
+    }
   }
 
   init() {
@@ -73,11 +78,26 @@ export class ThreePlanet extends ThreeObject {
     this.scene.add( this._light);
   }
 
+  /**
+   * Updates the planet's local position.
+   * @param {Array<Number>} XYZ components of the new position coordinate.
+   */
   updatePosition( position) {
     console.log( `three-planet[${this.id}] › updatePosition()`, position);
     if( typeof position !== "undefined") {
       const [ x, y, z ] = position;
       this._sphere.position.set( x, y, z); }
+  }
+
+  /**
+   * Updates the planet's local rotation.
+   * @param {THREE.Euler} rotation around axis XYZ, in radians.
+   */
+  updateRotation( rotation) {
+    console.log( `three-planet[${this.id}] › updateRotation()`, rotation);
+    if( typeof rotation !== "undefined") {
+      const [ rx, ry, rz ] = rotation;
+      this._sphere.rotation.set( rx, ry, rz); }
   }
 
   /**
