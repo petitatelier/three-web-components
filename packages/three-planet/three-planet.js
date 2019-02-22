@@ -1,22 +1,38 @@
+import { html, css } from "lit-element";
 import { ThreeObject } from "@petitatelier/three-object";
 import { AmbientLight, SphereGeometry, Mesh, MeshPhongMaterial, TextureLoader } from "three";
 
 export const Default = Object.freeze({
   id: "defaultPlanet",
   position: [ 0, 0, 0 ],
-  rotation: [ Math.PI / 2, 0, 0 ]
+  rotation: [ Math.PI / 2, 0, 0 ],
+  animate: true
 });
 
 export class ThreePlanet extends ThreeObject {
+
+  static get styles() {
+    return css`
+      :host { position: relative }
+      :host([ hidden]) { display: none }
+    `;
+  }
+
+  render() {
+    return html`
+      <p>Planet ${this.id} ${this.animate ? "(animated)" : ""}</p>
+      <slot></slot>`;
+  }
 
   /**
    * Attributes and properties observed by Lit-Element.
    */
   static get properties() {
     return {
-      id: { type: String },                     // Identifier of the camera in the animation
-      position: { type: Array, reflect: true }, // Planet position at [ x, y, z ]
-      rotation: { type: Array, reflect: true }, // Planet rotated on axis [ x, y, z ] (in radians)
+      id: { type: String },                       // Identifier of the camera in the animation
+      position: { type: Array, reflect: true },   // Planet position at [ x, y, z ]
+      rotation: { type: Array, reflect: true },   // Planet rotated on axis [ x, y, z ] (in radians)
+      animate:  { type: Boolean, reflect: true }  // Whether or not to animate the globe
     };
   }
 
@@ -30,6 +46,7 @@ export class ThreePlanet extends ThreeObject {
     this.id = Default.id;
     this.position = Default.position;
     this.rotation = Default.rotation;
+    this.animate = Default.animate;
 
     // Initialize private properties
     this._textureLoader = new TextureLoader();
@@ -105,7 +122,9 @@ export class ThreePlanet extends ThreeObject {
    */
   step( time, delta) {
     // console.log( `three-planet[${this.id}] › step(${time}, ${delta})`);
-    this._sphere.rotation.y += 0.025;
+    if( this.animate) {
+      this._sphere.rotation.y += 0.025;
+    }
   }
 
   /**

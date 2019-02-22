@@ -28,7 +28,7 @@ export class ThreeScene extends LitElement {
   render() {
     return html`
       <p>Scene ${this.id}</p>
-    `;
+      <slot></slot>`;
   }
 
   get scene() {

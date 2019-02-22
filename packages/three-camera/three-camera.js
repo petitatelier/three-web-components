@@ -46,8 +46,7 @@ export class ThreeCamera extends LitElement {
 
   render() {
     return html`
-      <p>Camera ${this.id} of type ${this.type}</p>
-    `;
+      <p>Camera ${this.id} of type ${this.type}</p>`;
   }
 
   get camera() {
