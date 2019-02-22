@@ -1,5 +1,5 @@
 import { LitElement, html, css } from "lit-element";
-import { PerspectiveCamera, OrthographicCamera } from "three";
+import { PerspectiveCamera, OrthographicCamera, Vector3 } from "three";
 
 export const CameraTypeEnum = Object.freeze({
   perspective: "perspective",
@@ -107,6 +107,8 @@ export class ThreeCamera extends LitElement {
     if( type === CameraTypeEnum.perspective) {
       const { fov, aspect, near, far } = options;
       this._camera = new PerspectiveCamera( fov, aspect, near, far);
+      this._camera.position.set( 0, -5, 2);
+      this._camera.lookAt( new Vector3( 0, 0, 0));
     } else {
       const { left, right, top, bottom, near, far } = options;
       this._camera = new OrthographicCamera( left, right, top, bottom, near, far);
@@ -143,10 +145,10 @@ export class ThreeCamera extends LitElement {
    * removed from the DOM.
    */
   disconnectedCallback() {
-    super.disconnectedCallback();
     console.log( `three-camera[${this.id}] › disconnectedCallback()`);
     this.deregisterCamera();
     this.disposeCamera();
+    super.disconnectedCallback();
   }
 
   /**

@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit-element";
 import { Events as CameraEvents } from "@petitatelier/three-camera";
 import { Events as SceneEvents } from "@petitatelier/three-scene";
-import * as THREE from "three";
+import { WebGLRenderer } from "three";
 
 export const Default = Object.freeze({
   fps: 60
@@ -182,8 +182,8 @@ export class ThreeApp extends LitElement {
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback();
     console.log( "three-app › disconnectedCallback()");
+    super.disconnectedCallback();
   }
 
   /**
@@ -215,8 +215,10 @@ export class ThreeApp extends LitElement {
     this._canvas = this.shadowRoot.getElementById( "display");
 
     // Instantiates a Three WebGL renderer, rendering to our ‹canvas› element
-    this._renderer = new THREE.WebGLRenderer(
-      { antialias: true, canvas: this._canvas });
+    this._renderer = new WebGLRenderer({
+      canvas: this._canvas,
+      antialias: true
+    });
 
     // Update size of the display buffer of the renderer
     this.resize();

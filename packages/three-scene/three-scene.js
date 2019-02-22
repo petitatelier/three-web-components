@@ -1,3 +1,4 @@
+import { ThreeObject } from "@petitatelier/three-object";
 import { LitElement, html, css } from "lit-element";
 import { Scene } from "three";
 
@@ -61,9 +62,15 @@ export class ThreeScene extends LitElement {
 
   /**
    * Override, to programmatically animate the scene.
+   * Don't forget to call `super.step( time, delta)`.
    */
   step( time, delta) {
-    // console.log( `three-scene[${this.id}] › step(${time}, ${delta})`);
+    for( let i = 0; i < this.children.length; i++) {
+      const elt = this.children[ i];
+      if( elt instanceof ThreeObject) {
+        elt.step( time, delta);
+      }
+    }
   }
 
   updated( changedProperties) {
@@ -92,10 +99,10 @@ export class ThreeScene extends LitElement {
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback();
     console.log( `three-scene[${this.id}] › disconnectedCallback()`);
     this.deregisterScene();
     this.disposeScene();
+    super.disconnectedCallback();
   }
 
   /**

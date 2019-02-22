@@ -1,5 +1,5 @@
-import { LitElement } from "lit-element";
 import { ThreeScene } from "@petitatelier/three-scene";
+import { LitElement } from "lit-element";
 
 export class ThreeObject extends LitElement {
 
@@ -59,8 +59,8 @@ export class ThreeObject extends LitElement {
   }
 
   disconnectedCallback() {
-    super.disconnectedCallback();
     this.dispose();
     this._sceneElement = undefined;
+    super.disconnectedCallback();
   }
 }

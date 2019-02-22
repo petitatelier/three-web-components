@@ -30,6 +30,7 @@ export class ThreePlanet extends ThreeObject {
 
     this._sphere = new Mesh( sphereGeometry, earthMaterial);
     this._light = new AmbientLight( 0xFFFFFF); // soft white light
+    this._sphere.rotation.x = Math.PI / 2;
 
     this.scene.add( this._sphere);
     this.scene.add( this._light);
@@ -62,3 +63,6 @@ export class ThreePlanet extends ThreeObject {
     this._light = undefined;
   }
 }
+
+// Register the element with the browser
+customElements.define( "three-planet", ThreePlanet);
