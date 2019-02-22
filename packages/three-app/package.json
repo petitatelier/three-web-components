@@ -1,14 +1,14 @@
 {
   "name": "@petitatelier/three-app",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Defines the ‹three-app› element, a Three.js app container and view, that animates its scenes and cameras",
   "author": "Olivier Lange",
   "license": "BSD-3-Clause",
   "main": "three-app.js",
   "scripts": {},
   "dependencies": {
-    "@petitatelier/three-camera": "^0.1.4",
-    "@petitatelier/three-scene": "^0.1.2",
+    "@petitatelier/three-camera": "^0.1.5",
+    "@petitatelier/three-scene": "^0.1.5",
     "lit-element": "^2.0.1",
     "lit-html": "^1.0.0",
     "three": "^0.101.1"
