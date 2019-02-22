@@ -1,3 +1,3 @@
-# ‹three-object› class
+# ‹three-planet› class
 
-A base class, that all 3D objects to be added to a scene should extend.
+An element that renders a rotating 3D globe, with an earth or moon texture.
