@@ -25,10 +25,14 @@ The `<three-*>` web components can be used as follow (see also [demos/three-plan
 <three-app fps="24" camera="c01" scene="s01">
   <three-camera id="c01" type="perspective"></three-camera>
   <three-scene id="s01">
-    <three-planet id="earth"></three-planet>
+    <three-planet id="earth" animate></three-planet>
   </three-scene>
 </three-app>
 ```
+
+<a href="demos/assets/screenshots/20190222-three-planet-animated.png">
+  <img height="350" title="Screencopy of animated ‹three-planet› element"
+  src="demos/assets/screenshots/20190222-three-planet-animated.png"></a>
 
 ## Contributing
 
