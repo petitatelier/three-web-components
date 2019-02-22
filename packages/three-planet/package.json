@@ -1,6 +1,6 @@
 {
   "name": "@petitatelier/three-planet",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Defines a ‹three-planet› element, that renders a globe with an earth or moon texture",
   "author": "Olivier Lange",
   "license": "BSD-3-Clause",
