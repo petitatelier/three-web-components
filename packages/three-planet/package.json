@@ -23,12 +23,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/olange/three-web-components.git"
+    "url": "git+https://github.com/petitatelier/three-web-components.git"
   },
   "bugs": {
-    "url": "https://github.com/olange/three-web-components/issues"
+    "url": "https://github.com/petitatelier/three-web-components/issues"
   },
-  "homepage": "https://github.com/olange/three-web-components/tree/master/packages/three-planet#readme",
+  "homepage": "https://github.com/petitatelier/three-web-components/tree/master/packages/three-planet#readme",
   "publishConfig": {
     "access": "public"
   }

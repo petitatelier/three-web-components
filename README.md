@@ -42,7 +42,7 @@ Lerna basically executes your command on each package of the repository. We comm
 
 ### Clone
 
-    $ git clone git@github.com:olange/three-web-components.git
+    $ git clone git@github.com:petitatelier/three-web-components.git
     $ cd three-web-components
 
 ### Setup
