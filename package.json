@@ -6,7 +6,7 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "bootstrap": "npm install && ./scripts/bootstrap.sh",
-    "dev": "polyserve --npm --module-resolution=node --open-path=demos/index.html --open",
+    "dev": "polyserve --npm --module-resolution=node --open-path=demos/index.html",
     "publish": "npx lerna publish"
   },
   "devDependencies": {
