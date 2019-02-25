@@ -1,6 +1,6 @@
 # Three Web Components
 
-[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/) [![npm latest version](https://img.shields.io/npm/v/@petitatelier/three-app.svg)](https://www.npmjs.com/package/@petitatelier/three-app)
 
 A collection of Web Components to compose Three.js web apps, as simply as dropping them in the DOM and defining their attributes.
 
