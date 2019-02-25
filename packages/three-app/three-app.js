@@ -20,12 +20,16 @@ export class ThreeApp extends LitElement {
   }
 
   render() {
+    const cameraRepr = this.camera ? this.camera.toString() : "(undefined)",
+          sceneRepr = this.scene ? this.scene.toString() : "(undefined)",
+          intervalRepr = this._intervalActual ? (+this._intervalActual).toFixed( 2) : "(undefined)";
+
     return html`
       <div id="info">
         <p>Desired: ${this.fps} FPS (a frame about every ${this._interval} ms)<br/>
-          Actual: ${this._fpsActual} FPS (a frame about every ${this._intervalActual} ms)</p>
-        <p>Active camera: ${this.camera}</br>
-          Active scene: ${this.scene}</p>
+          Actual: ${this._fpsActual} FPS (a frame about every ${intervalRepr} ms)</p>
+        <p>Active camera: ${cameraRepr}</br>
+          Active scene: ${sceneRepr}</p>
         <slot></slot>
       </div>
       <canvas id="display"></canvas>
@@ -287,12 +291,17 @@ export class ThreeApp extends LitElement {
    */
   step( time, delta) {
     this.updateTimings( delta);
+
     if( this.needsResize()) { this.resize(); }
+
     this._scenes.forEach(( elt) => elt.step( time, delta));
     this._cameras.forEach(( elt) => elt.step( time, delta));
-    this._renderer.render(
-      this._activeScene.scene,
-      this._activeCamera.camera);
+
+    if( this._activeScene && this._activeCamera) {
+      this._renderer.render(
+        this._activeScene.scene,
+        this._activeCamera.camera);
+    }
   }
 
   /**
