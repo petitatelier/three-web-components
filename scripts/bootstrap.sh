@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 set -e
 npm_bin_dir=`npm bin`
 
