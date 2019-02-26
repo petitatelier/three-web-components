@@ -9,13 +9,16 @@
   "dependencies": {
     "lit-element": "^2.0.1",
     "lit-html": "^1.0.0",
-    "three": "^0.101.1"
+    "three": "^0.101.1",
+    "osc-js": "^2.0.2",
+    "ws": "^6.1.4"
   },
   "keywords": [
     "three.js",
     "webcomponent",
     "3d",
-    "camera"
+    "camera",
+    "osc"
   ],
   "repository": {
     "type": "git",

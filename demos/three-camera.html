@@ -22,10 +22,11 @@
 
   <main class="vflex vfill">
     <three-app class="vflex vfill" fps="10">
-      <three-camera id="camera01" type="perspective" helper="true"></three-camera>
+      <three-camera id="camera01" type="perspective" controls="osc"></three-camera>
     </three-app>
   </main>
 
+  <script src="../node_modules/osc-js/lib/osc.min.js"></script>
   <script type="module" src="../node_modules/@petitatelier/three-app/three-app.js"></script>
   <script type="module" src="../node_modules/@petitatelier/three-camera/three-camera.js"></script>
   <script>

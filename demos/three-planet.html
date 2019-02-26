@@ -22,13 +22,14 @@
 
   <main class="vflex vfill">
     <three-app class="vflex vfill" fps="24">
-      <three-camera id="camera01" type="perspective"></three-camera>
+      <three-camera id="camera01" type="perspective" controls="osc"></three-camera>
       <three-scene id="scene01">
         <three-planet id="earth" animate></three-planet>
       </three-scene>
     </three-app>
   </main>
 
+  <script src="../node_modules/osc-js/lib/osc.min.js"></script>
   <script type="module" src="../node_modules/@petitatelier/three-app/three-app.js"></script>
   <script type="module" src="../node_modules/@petitatelier/three-camera/three-camera.js"></script>
   <script type="module" src="../node_modules/@petitatelier/three-scene/three-scene.js"></script>

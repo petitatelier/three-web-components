@@ -71,7 +71,6 @@ function autoSendPing( osc, interval) {
 console.log( "OSC Websocket <-> UDP relay server");
 const osc = start();
 
-console.log( "Process argv:", process.argv);
 if( process.argv.indexOf( "--auto-ping") > -1) {
   autoSendPing( osc, 5000); // interval in milliseconds
 }

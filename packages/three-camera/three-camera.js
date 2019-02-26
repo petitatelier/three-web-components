@@ -1,9 +1,15 @@
 import { LitElement, html, css } from "lit-element";
 import { PerspectiveCamera, OrthographicCamera } from "three";
+import { ThreeCameraOSCController } from "./three-camera-osc-controller";
 
 export const CameraTypeEnum = Object.freeze({
   perspectiveCamera: "perspective",
   orthographicCamera: "orthographic"
+});
+
+export const CameraControlsEnum = Object.freeze({
+  oscController: "osc",
+  orbitterController: "orbitter"
 });
 
 export const Default = Object.freeze({
@@ -22,7 +28,8 @@ export const Default = Object.freeze({
     },
   },
   position: [ 0, -5, 2 ],
-  lookAt: [ 0, 0, 0 ]
+  lookAt: [ 0, 0, 0 ],
+  controls: []
 });
 
 export const Events = Object.freeze({
@@ -61,9 +68,22 @@ export class ThreeCamera extends LitElement {
       id: { type: String },                     // Identifier of the camera in the animation
       type: { type: String, reflect: true },    // Either `perspective` or `orthographic`
       options: { type: Object, reflect: true }, // Camera settings, depending on camera type
-      position: { type: Array, reflect: true }, // Camera position at [ x, y, z ]
-      lookAt: { type: Array, reflect: true, attribute: "look-at" }  // Camera looking at [ x, y, z ]
+      position: { type: Array, reflect: true }, // Camera position at `[ x, y, z ]`
+      lookAt: { type: Array, reflect: true, attribute: "look-at" },  // Camera looking at `[ x, y, z ]`
+      controls: { type: String, reflect: true } // Camera controlled by `osc`, `orbitter`
     };
+  }
+
+  get controls() {
+    return this._controls.join( " ");
+  }
+
+  set controls( newVal) {
+    const oldVal = this._controls;
+    this._controls = Array.from(
+      (newVal === null) ? Default.controls
+      : String( newVal).split( " ").filter(( str) => str !== ""));
+    this.requestUpdate( "controls", oldVal);
   }
 
   constructor() {
@@ -74,6 +94,8 @@ export class ThreeCamera extends LitElement {
 
     // Initialize private properties
     this._camera = undefined;
+    this._controls = undefined;
+    this._controllers = { osc: undefined, orbitter: undefined };
 
     // Initialize public properties
     this.id = Default.id;
@@ -124,6 +146,9 @@ export class ThreeCamera extends LitElement {
     if( changedProperties.has( "lookAt")) {
       this.updateDirection( this.lookAt);
     }
+    if( changedProperties.has( "controls")) {
+      this.updateControls( this._controls);
+    }
   }
 
   createCamera( type, options) {
@@ -162,6 +187,27 @@ export class ThreeCamera extends LitElement {
     if( typeof lookAt !== "undefined") {
       const [ x, y, z ] = lookAt;
       this._camera.lookAt( x, y, z);
+    }
+  }
+
+  updateControls( controls) {
+    console.log( `three-camera[${this.id}] › updateControls()`, controls);
+    // Deregister controllers that were active, but are not anymore
+    if( typeof this._controllers.osc !== "undefined") {
+      console.log( `three-camera[${this.id}] › updateControls(): Deregistering OSC controller`);
+      this._controllers.osc.dispose();
+      this._controllers.osc = undefined;
+    }
+
+    // Register an OSC camera controller, which communicates over Web Socket
+    // with a remote OSC control app — needs the _OSC Relaying Server_
+    // (execute `npm run dev:osc`, to start `scripts/osc-relay.js`)
+    // as well as a specific OSC messaging scheme (see `P5Camera` layout
+    // for TouchOSC in `https://github.com/olange/touchosc-layouts`)
+    if( this._controls.includes( "osc")) {
+      console.log( `three-camera[${this.id}] › updateControls(): Registering OSC controller`);
+      // TODO
+      this._controllers.osc = new ThreeCameraOSCController( this);
     }
   }
 
