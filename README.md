@@ -53,9 +53,13 @@ Run at first, and for every new package:
 
 ### Run the dev server & code
 
-Start the local HTTP dev server and visit http://localhost:8081/demos/:
+Start the local _HTTP dev server_ and visit http://localhost:8081/demos/:
 
     $ npm run dev
+
+Alternatively, to start a mini _OSC relay server_ at same time — to orbit a camera from a remote OSC controller:
+
+    $ npm run dev:osc
 
 ### Publish to NPM
 
