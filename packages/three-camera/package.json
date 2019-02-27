@@ -1,6 +1,6 @@
 {
   "name": "@petitatelier/three-camera",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Defines the ‹three-camera› element, to be used by a ‹three-app› container to render a scene",
   "author": "Olivier Lange",
   "license": "BSD-3-Clause",
@@ -9,8 +9,8 @@
   "dependencies": {
     "lit-element": "^2.0.1",
     "lit-html": "^1.0.0",
-    "three": "^0.101.1",
     "osc-js": "^2.0.2",
+    "three": "^0.101.1",
     "ws": "^6.1.4"
   },
   "keywords": [
