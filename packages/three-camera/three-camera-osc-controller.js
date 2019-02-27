@@ -25,47 +25,71 @@ export const Default = Object.freeze({
  * [`P5Camera` layout](https://github.com/olange/touchosc-layouts)
  * of the [TouchOSC](https://hexler.net/software/touchosc) mobile app.
  *
+ * Usage:
+ *
+ * 1. Add a `<script src="../node_modules/osc-js/lib/osc.min.js"></script>`
+ *    in the HTML page that bootstraps the web app.
+ *
+ *    OSC currently does not support module imports. Its build uses a version
+ *    of the UMD wrapper, which contains a common bug, the incorrect detection
+ *    of browser global in _strict mode_ implied by module imports
+ *    (see https://github.com/umdjs/umd/pull/125).
+ *
+ * 2. Add a `controls="osc"` attribute to the ‹three-camera› element you;
+ *    want to control from an OSC remote app; the element will initialize
+ *    and attach itself an OSC controller:
+ *
+ *        ‹three-camera id="…" type="perspective" controls="osc"›
+ *          …
+ *        </three-camera>
+ *
  * Prerequisites:
  *
- * To work effectively, this controller requires the « _Touch Messages (/z)_ »
- * option to be toggled on in the _TouchOSC_ remote app.
+ * 1. To work effectively, this controller requires the « _Touch Messages (/z)_ »
+ *    option to be toggled on in the _TouchOSC_ remote app.
  *
- * The controller also expects an _OSC Relaying Server_ to be running,
- * to enable bi-directionnal WS<->UDP communication between the web app
- * and the OSC remote controller.
+ * 2. The controller also expects an _OSC Relaying Server_ to be running,
+ *    to enable bi-directionnal WS<->UDP communication between the web app
+ *    and the OSC remote controller.
  *
- * Simply run `npm run dev:osc` in development; have a look at the
- * `scripts/osc-relay.js` script for Node, if you would need to
- * such an OSC Relaying Server in production.
+ *    Simply run `npm run dev:osc` in development; have a look at the
+ *    `scripts/osc-relay.js` script for Node, if you would need to
+ *    such an OSC Relaying Server in production.
  *
  * Known limitations:
  *
- * Currently, the OSC controller connects to a Websocket at host/port
- * `ws://0.0.0.0:8080`, which matches the settings of the OSC Relaying
- * Server. It works as long as you access the web app from the host
- * running the OSC Relaying Server. However, you won't be able to
- * control the camera, if you try to access the HTTP server from a
- * remote computer — where no OSC Relaying Server runs and therefore,
- * no Websocket is available to connect to at `ws://0.0.0.0:8080/`.
+ * 1. Only a camera of type `perspective` can be controlled by OSC.
  *
- * We would need either a configuration option to the controller;
- * or configure it dynamically, using the address of the HTTP server;
- * or better, a discovery mechanism, to locate the OSC Relaying Server
- * on local network (which could run independently of the HTTP server).
+ * 2. Currently, the OSC controller connects to a Websocket at host/port
+ *    `ws://0.0.0.0:8080`, which matches the settings of the OSC Relaying
+ *    Server.
+ *
+ *    It will work, as long as you access the web app from the host
+ *    running the OSC Relaying Server.
+ *
+ *    However, you won't be able to control the camera, if you try to
+ *    access the HTTP server from a remote computer — where no OSC Relaying
+ *    Server runs and, therefore, no Websocket is available to connect
+ *    to at `ws://0.0.0.0:8080/`.
+ *
+ *    We would need either a configuration option to the controller;
+ *    or configure it dynamically, using the address of the HTTP server;
+ *    or better, a discovery mechanism, to locate the OSC Relaying Server
+ *   on local network (which could run independently of the HTTP server).
  *
  * Notes:
  *
- * The system is designed in a way, that it effectively only supports
- * one remote OSC controlling app; in practice, you can have many,
- * but only one will receive the updates of its position–, center–
- * and perspective labels.
+ * 1. The system is designed in a way, that it effectively only supports
+ *    one remote OSC controlling app; in practice, you can have many,
+ *    but only one will receive the updates of its position–, center–
+ *    and perspective labels.
  *
- * To improve on this, we would need to be able to pick one of
- * the OSC controller from a little GUI in the camera, and ask
- * the OSC Relaying Server to register a route between the WS
- * of one specific web app and the one specific OSC controller,
- * to enable many controllers effectively controlling one webapp
- * and receive position updates for the camera of that webapp.
+ *    To improve on this, we would need to be able to pick one of
+ *    the OSC controller from a little GUI in the camera, and ask
+ *    the OSC Relaying Server to register a route between the WS
+ *    of one specific web app and the one specific OSC controller,
+ *    to enable many controllers effectively controlling one webapp
+ *    and receive position updates for the camera of that webapp.
  */
 export class ThreeCameraOSCController extends ThreeCameraController {
 
