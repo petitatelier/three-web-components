@@ -57,10 +57,6 @@ export class ThreeCamera extends LitElement {
       <p>Camera ${this.id} of type ${this.type}</p>`;
   }
 
-  get camera() {
-    return this._camera;
-  }
-
   /**
    * Attributes and properties observed by Lit-Element.
    */
@@ -72,8 +68,19 @@ export class ThreeCamera extends LitElement {
       position: { type: Array, reflect: true }, // Camera position at `[ x, y, z ]`
       lookAt: { type: Array, reflect: true, attribute: "look-at" },  // Camera looking at `[ x, y, z ]`
       zoom: { type: Number, reflect: true },    // Camera zoom factor
-      controls: { type: String, reflect: true } // Camera controlled by `osc`, `orbitter`
+      controls: { type: String, reflect: true } // Camera controlled by `osc` and/or `orbitter`
     };
+  }
+
+  /**
+   * Getter that returns the internal THREE `Camera` instance (either a
+   * `PerspectiveCamera` or `OrthographicCamera`, depending on the `type`
+   * attribute of this ‹three-camera› element).
+   *
+   * No equivalent setter, to avoid accidental removal of the instance.
+   */
+  get camera() {
+    return this._camera;
   }
 
   get controls() {
@@ -95,16 +102,19 @@ export class ThreeCamera extends LitElement {
     console.log( `three-camera › constructor()`);
 
     // Initialize private properties
-    this._camera = undefined;
-    this._controls = undefined;
-    this._controllers = { osc: undefined, orbitter: undefined };
+    this._camera = undefined;   // Internal THREE `Camera` object instance (`PerspectiveCamera` or `OrthographicCamera`)
+    this._controls = undefined; // Internal value of `controls` attribute, reflected as an Array ([ `osc`, `orbitter` ] for instance)
+    this._controllers = {       // References to the controller object(s) attached to the camera
+      osc: undefined,           // Instance of an `OSC` class — @see three-camera-osc-controller.js
+      orbitter: undefined       // (Future use)
+    };
 
     // Initialize public properties
     this.id = Default.id;
     this.type = CameraTypeEnum.perspectiveCamera;
     this.options = Object.assign( {}, Default.options.perspectiveCamera);
-    this.position = [...Default.position];
-    this.lookAt = [...Default.lookAt];
+    this.position = [...Default.position]; // […array] to make a copy of the
+    this.lookAt = [...Default.lookAt];     // default value, which is an array
     this.zoom = Default.zoom;
   }
 
@@ -133,38 +143,46 @@ export class ThreeCamera extends LitElement {
     console.log( `three-camera[${this.id}] › updated()`, changedProperties);
     if( changedProperties.has( "type")) {
       if( changedProperties.get( "type") !== this.type) {
+        this.disposeControls();
         this.disposeCamera();
-        this.createCamera( this.type, this.options);
+        this.createCamera();
       }
     } else {
       if( changedProperties.has( "options")) {
-        const newOptions = this.options,
-              oldOptions = changedProperties.get( "options");
-        this.updateOptions( newOptions, oldOptions);
+        this.updateOptions();
       }
     }
     if( changedProperties.has( "position")) {
-      this.updatePosition( this.position);
-    }
-    if( changedProperties.has( "lookAt")) {
-      this.updateDirection( this.lookAt);
+      // `updatePosition()` will call `updateDirection()` in turn (to rotate
+      // camera after it was moved, to keep looking at same position), so if
+      // `lookAt` propery also changed, the case is covered by this call to
+      // `updatePosition()` and there is no need to call `updateDirection()`
+      // again (hence the little `else if` optimization hereafter)
+      this.updatePosition();
+    } else if( changedProperties.has( "lookAt")) {
+      this.updateDirection();
     }
     if( changedProperties.has( "zoom")) {
-      this.updateZoom( this.zoom);
+      this.updateZoom();
     }
     if( changedProperties.has( "controls")) {
-      this.updateControls( this._controls);
+      this.updateControls();
     }
   }
 
-  createCamera( type, options) {
+  createCamera() {
+    const type = this.type,
+          options = this.options;
     console.log( `three-camera[${this.id}] › createCamera()`, type, options);
-    if( type === CameraTypeEnum.perspectiveCamera) {
-      const { fov, aspect, near, far } = options;
-      this._camera = new PerspectiveCamera( fov, aspect, near, far);
-    } else {
-      const { left, right, top, bottom, near, far } = options;
-      this._camera = new OrthographicCamera( left, right, top, bottom, near, far);
+    if( typeof type !== "undefined" && typeof options !== "undefined") {
+      if( type === CameraTypeEnum.perspectiveCamera) {
+        const { fov, aspect, near, far } = options;
+        this._camera = new PerspectiveCamera( fov, aspect, near, far);
+      } else {
+        const { left, right, top, bottom, near, far } = options;
+        this._camera = new OrthographicCamera( left, right, top, bottom, near, far);
+      }
+      this._camera.name = this.id;
     }
   }
 
@@ -175,28 +193,37 @@ export class ThreeCamera extends LitElement {
     }
   }
 
-  updateOptions( newOptions, oldOptions) {
-    console.log( `three-camera[${this.id}] › updateOptions()`, newOptions, oldOptions);
-    Object.assign( this._camera, newOptions);
+  updateOptions() {
+    const options = this.options;
+    console.log( `three-camera[${this.id}] › updateOptions()`, options);
+    Object.assign( this._camera, options);
     this._camera.updateProjectionMatrix();
   }
 
-  updatePosition( position) {
+  updatePosition() {
+    const position = this.position;
     console.log( `three-camera[${this.id}] › updatePosition()`, position);
     if( typeof position !== "undefined") {
       const [ x, y, z ] = position;
-      this._camera.position.set( x, y, z); }
+      // Move the camera position
+      this._camera.position.set( x, y, z); // _camera.position is a `THREE.Vector3` instance
+      // Rotate the camera after moving it, so that it keeps looking at same position
+      this.updateDirection();
     }
+  }
 
-  updateDirection( lookAt) {
+  updateDirection() {
+    const lookAt = this.lookAt;
     console.log( `three-camera[${this.id}] › updateDirection()`, lookAt);
     if( typeof lookAt !== "undefined") {
       const [ x, y, z ] = lookAt;
       this._camera.lookAt( x, y, z);
+      this._camera.updateProjectionMatrix();
     }
   }
 
-  updateZoom( zoom) {
+  updateZoom() {
+    const zoom = this.zoom;
     console.log( `three-camera[${this.id}] › updateZoom()`, zoom);
     if( typeof zoom !== "undefined") {
       this._camera.zoom = zoom;
@@ -204,23 +231,28 @@ export class ThreeCamera extends LitElement {
     }
   }
 
-  updateControls( controls) {
-    console.log( `three-camera[${this.id}] › updateControls()`, controls);
+  updateControls() {
+    const _controls = this._controls; // Internal value, which reflects the `controls` attribute as an Array instance
+    console.log( `three-camera[${this.id}] › updateControls()`, _controls);
     // Deregister controllers that were active, but are not anymore
-    if( typeof this._controllers.osc !== "undefined") {
-      console.log( `three-camera[${this.id}] › updateControls(): Deregistering OSC controller`);
-      this._controllers.osc.dispose();
-      this._controllers.osc = undefined;
-    }
+    this.disposeControls();
 
     // Register an OSC camera controller, which communicates over Web Socket
     // with a remote OSC control app — needs the _OSC Relaying Server_
     // (execute `npm run dev:osc`, to start `scripts/osc-relay.js`)
     // as well as a specific OSC messaging scheme (see `P5Camera` layout
     // for TouchOSC in `https://github.com/olange/touchosc-layouts`)
-    if( this._controls.includes( "osc")) {
+    if( _controls.includes( "osc")) {
       console.log( `three-camera[${this.id}] › updateControls(): Registering OSC controller`);
       this._controllers.osc = new ThreeCameraOSCController( this);
+    }
+  }
+
+  disposeControls() {
+    if (typeof this._controllers.osc !== "undefined") {
+      console.log(`three-camera[${this.id}] › updateControls(): Deregistering OSC controller`);
+      this._controllers.osc.dispose();
+      this._controllers.osc = undefined;
     }
   }
 
@@ -260,6 +292,7 @@ export class ThreeCamera extends LitElement {
   disconnectedCallback() {
     console.log( `three-camera[${this.id}] › disconnectedCallback()`);
     this.deregisterCamera();
+    this.disposeControls();
     this.disposeCamera();
     super.disconnectedCallback();
   }
