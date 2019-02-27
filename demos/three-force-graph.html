@@ -22,16 +22,16 @@
 
   <main class="vflex vfill">
     <three-app class="vflex vfill" fps="60">
-      <three-camera id="camera01" type="perspective" position='[0,5,0]'></three-camera>
+      <three-camera id="camera01" type="perspective" position='[0,10,0]'></three-camera>
       <three-scene id="scene01">
         <three-force-graph
           id="three-force-graph"
           position='[0,0,0]'
           verbose
           animated
-          generate=300
-          generateSpeed=10
-          nodeSize=0.5
+          generate=400
+          generateSpeed=20
+          nodeSize=0.4
           >
         </three-force-graph>
       </three-scene>
@@ -44,17 +44,6 @@
   <script type="module" src="../node_modules/@petitatelier/three-force-graph/three-force-graph.js"></script>
 
   <script>
-    var shouldMoveCamera = true;
-		if(shouldMoveCamera){
-			var cameraY = 3;
-			var interval = setInterval( () => {
-				cameraY += 0.005;
-				var cam = document.getElementById("camera01");
-				cam.position = [0, cameraY, 0];
-				if(cameraY > 17) { clearInterval(interval); }
-			}, 25);
-		}
-
     addEventListener( "load", () => document.body.classList.remove( "unresolved"));
   </script>
 </body>
