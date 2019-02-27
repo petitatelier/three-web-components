@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>‹three-planet element demo</title>
+  <title>‹three-force-graph element demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
   <link rel="stylesheet" href="demo-component.css">
@@ -17,24 +17,43 @@
 
   <header>
     <a href="index.html">Catalog</a>
-    <span> › Element ‹three-planet›</span>
+    <span> › Element ‹three-force-graph›</span>
   </header>
 
   <main class="vflex vfill">
-    <three-app class="vflex vfill" fps="24">
-      <three-camera id="camera01" type="perspective" controls="osc"></three-camera>
+    <three-app class="vflex vfill" fps="80">
+      <three-camera id="camera01" type="perspective" position='[0,5,0]'></three-camera>
       <three-scene id="scene01">
-        <three-planet id="earth" animate></three-planet>
+        <three-force-graph
+          id="three-force-graph"
+          position='[0,0,0]'
+          verbose
+          animated
+          generate=300
+          generateSpeed=10
+          nodeSize=0.5
+          >
+        </three-force-graph>
       </three-scene>
     </three-app>
   </main>
 
-  <script src="../node_modules/osc-js/lib/osc.min.js"></script>
   <script type="module" src="../node_modules/@petitatelier/three-app/three-app.js"></script>
   <script type="module" src="../node_modules/@petitatelier/three-camera/three-camera.js"></script>
   <script type="module" src="../node_modules/@petitatelier/three-scene/three-scene.js"></script>
-  <script type="module" src="../node_modules/@petitatelier/three-planet/three-planet.js"></script>
+  <script type="module" src="../node_modules/@petitatelier/three-force-graph/three-force-graph.js"></script>
+
   <script>
+    var shouldMoveCamera = true;
+		if(shouldMoveCamera){
+			var cameraY = 3;
+			var interval = setInterval( () => {
+				cameraY += 0.005;
+				var cam = document.getElementById("camera01");
+				cam.position = [0, cameraY, 0];
+				if(cameraY > 17) { clearInterval(interval); }
+			}, 25);
+		}
     addEventListener( "load", () => document.body.classList.remove( "unresolved"));
   </script>
 </body>

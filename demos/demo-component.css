@@ -39,6 +39,12 @@ header > a {
   align-items: center;
 }
 
+h1 {
+  font-family: "Roboto Mono", monospace;
+  -webkit-font-smoothing: antialiased;
+  font-size: 1.25rem;
+}
+
 main {
   margin-top: 64px;
   padding: 16px;
