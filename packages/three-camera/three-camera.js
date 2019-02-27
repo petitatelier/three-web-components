@@ -126,10 +126,14 @@ export class ThreeCamera extends LitElement {
   }
 
   /**
-   * Override, to programmatically animate the camera.
+   * Override, to programmatically animate the camera. Don't forget to
+   * call `super.step()`, to keep the orbit controller auto-rotating.
    */
   step( time, delta) {
-    // console.log( `three-camera[${this.id}] › step(${time}, ${delta})`);
+    const orbitter = this._controllers.orbitter;
+    if( typeof orbitter !== "undefined") {
+      orbitter.step( time, delta);
+    }
   }
 
   /**
