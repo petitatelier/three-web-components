@@ -1,13 +1,13 @@
 {
   "name": "@petitatelier/three-scene",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Defines the ‹three-scene› element, that can be rendered and to which objects can be added",
   "author": "Olivier Lange",
   "license": "BSD-3-Clause",
   "main": "three-scene.js",
   "scripts": {},
   "dependencies": {
-    "@petitatelier/three-object": "^0.1.6",
+    "@petitatelier/three-object": "^0.2.0",
     "lit-element": "^2.0.1",
     "lit-html": "^1.0.0",
     "three": "^0.101.1"

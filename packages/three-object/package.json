@@ -1,13 +1,13 @@
 {
   "name": "@petitatelier/three-object",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Defines the ‹three-object› class, that all 3D objects to be added to a scene should extend",
   "author": "Olivier Lange",
   "license": "BSD-3-Clause",
   "main": "three-object.js",
   "scripts": {},
   "dependencies": {
-    "@petitatelier/three-scene": "^0.1.6",
+    "@petitatelier/three-scene": "^0.2.0",
     "lit-element": "^2.0.1",
     "lit-html": "^1.0.0",
     "three": "^0.101.1"
