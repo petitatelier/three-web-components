@@ -7,6 +7,26 @@ Creates a force 3D graph element, that can be placed in a scene.
 
 TODO
 
+## Example
+
+```html
+<three-app class="vflex vfill" fps="60">
+  <three-camera id="camera01" type="perspective" position='[0,5,0]'></three-camera>
+  <three-scene id="scene01">
+    <three-force-graph
+      id="three-force-graph"
+      position='[0,0,0]'
+      verbose
+      animated
+      generate=300
+      generateSpeed=10
+      nodeSize=0.5
+      >
+    </three-force-graph>
+  </three-scene>
+</three-app>
+```
+
 ## Screenshots
 
 ### Basic three force graph 
