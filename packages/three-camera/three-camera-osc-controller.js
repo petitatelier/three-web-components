@@ -30,14 +30,17 @@ export const Default = Object.freeze({
  * 1. Add a `<script src="../node_modules/osc-js/lib/osc.min.js"></script>`
  *    in the HTML page that bootstraps the web app.
  *
- *    OSC currently does not support module imports. Its build uses a version
- *    of the UMD wrapper, which contains a common bug, the incorrect detection
- *    of browser global in _strict mode_ implied by module imports
+ *    OSC currently does not support module imports
+ *    (see https://github.com/colinbdclark/osc.js/issues/137).
+ *
+ *    The build of latest version 2.0.2 released in NPM uses a version
+ *    of the UMD wrapper, which contains a common bug, the incorrect
+ *    detection of browser global in _strict mode_ implied by module imports
  *    (see https://github.com/umdjs/umd/pull/125).
  *
  * 2. Add a `controls="osc"` attribute to the ‹three-camera› element you;
  *    want to control from an OSC remote app; the element will initialize
- *    and attach itself an OSC controller:
+ *    and attach itself the OSC controller:
  *
  *        ‹three-camera id="…" type="perspective" controls="osc"›
  *          …
