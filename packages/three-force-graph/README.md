@@ -9,10 +9,20 @@ TODO
 
 ## Screenshots
 
-![Three Force Graph - Random colors](../../demos/screenshots/20190226-three-force-graph.jpg)
+### Basic three force graph 
+201 generated nodes with random colors
 
 
-![Three Force Graph - White](../../demos/screenshots/20190226-three-force-graph-white.jpg)
+<img src="../../demos/assets/screenshots/20190226-three-force-graph.jpg" width=300 />
+
+### Transparent white
+301 generated nodes with a white transparent color
 
 
-![Three Force Graph - Radioactive (501 nodes)](../../demos/screenshots/20190226-three-force-graph-radioactive.jpg)
+<img src="../../demos/assets/screenshots/20190226-three-force-graph-white.jpg" width=300 />
+
+### Radioactive colors
+501 generated nodes with a range of color
+
+
+<img src="../../demos/assets/screenshots/20190226-three-force-graph-radioactive.jpg" width=300 />

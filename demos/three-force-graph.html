@@ -21,7 +21,7 @@
   </header>
 
   <main class="vflex vfill">
-    <three-app class="vflex vfill" fps="80">
+    <three-app class="vflex vfill" fps="60">
       <three-camera id="camera01" type="perspective" position='[0,5,0]'></three-camera>
       <three-scene id="scene01">
         <three-force-graph
@@ -54,6 +54,7 @@
 				if(cameraY > 17) { clearInterval(interval); }
 			}, 25);
 		}
+
     addEventListener( "load", () => document.body.classList.remove( "unresolved"));
   </script>
 </body>
