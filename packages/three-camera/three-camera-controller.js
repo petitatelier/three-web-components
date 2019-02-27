@@ -8,6 +8,6 @@ export class ThreeCameraController {
 
   dispose() {
     console.log( `three-camera[${this.camera.id}] › ThreeCameraController[${this.id}] disposed`);
-    this._camera = undefined;
+    this.camera = undefined;
   }
 }

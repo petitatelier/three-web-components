@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit-element";
 import { PerspectiveCamera, OrthographicCamera } from "three";
-import { ThreeCameraOSCController } from "./three-camera-osc-controller";
+import { ThreeCameraOSCController } from "@petitatelier/three-camera/three-camera-osc-controller";
 
 export const CameraTypeEnum = Object.freeze({
   perspectiveCamera: "perspective",
@@ -100,7 +100,7 @@ export class ThreeCamera extends LitElement {
     // Initialize public properties
     this.id = Default.id;
     this.type = CameraTypeEnum.perspectiveCamera;
-    this.options = Default.options.perspectiveCamera;
+    this.options = Object.assign( {}, Default.options.perspectiveCamera);
     this.position = Default.position;
     this.lookAt = Default.lookAt;
   }
@@ -224,7 +224,7 @@ export class ThreeCamera extends LitElement {
    */
   updateAspectRatio( ratio) {
     console.log( `three-camera[${this.id}] › updateAspectRatio(${ratio})`);
-    this._camera.aspect = ratio;
+    this._camera.aspect = this.options.aspect = ratio;
     this._camera.updateProjectionMatrix();
   }
 
