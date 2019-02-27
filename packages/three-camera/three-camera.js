@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit-element";
 import { PerspectiveCamera, OrthographicCamera } from "three";
 import { ThreeCameraOSCController } from "@petitatelier/three-camera/three-camera-osc-controller";
+import { ThreeCameraOrbitController } from "@petitatelier/three-camera/three-camera-orbit-controller";
 
 export const CameraTypeEnum = Object.freeze({
   perspectiveCamera: "perspective",
@@ -245,6 +246,11 @@ export class ThreeCamera extends LitElement {
     if( _controls.includes( "osc")) {
       console.log( `three-camera[${this.id}] › updateControls(): Registering OSC controller`);
       this._controllers.osc = new ThreeCameraOSCController( this);
+    }
+
+    if( _controls.includes( "orbitter")) {
+      console.log( `three-camera[${this.id}] › updateControls(): Registering Orbit controller`);
+      this._controllers.orbitter = new ThreeCameraOrbitController( this);
     }
   }
 
