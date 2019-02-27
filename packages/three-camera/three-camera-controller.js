@@ -3,7 +3,7 @@ export class ThreeCameraController {
   constructor( id, camera) {
     console.log( `three-camera[${camera.id}] › ThreeCameraController[${id}] constructor`);
     this.id = id;
-    this.camera = camera; // `ThreeCamera` instance being controlled
+    this.camera = camera; // Reference to the ‹three-camera› element being controlled (a `ThreeCamera` object instance)
   }
 
   dispose() {

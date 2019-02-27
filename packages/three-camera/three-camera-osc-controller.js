@@ -17,6 +17,56 @@ export const Default = Object.freeze({
   }
 });
 
+/**
+ * Controls the camera position, view frustum and where it looks at
+ * from a remote OSC controlling app.
+ *
+ * This OSC controller was designed to respond to- and update the
+ * [`P5Camera` layout](https://github.com/olange/touchosc-layouts)
+ * of the [TouchOSC](https://hexler.net/software/touchosc) mobile app.
+ *
+ * Prerequisites:
+ *
+ * To work effectively, this controller requires the « _Touch Messages (/z)_ »
+ * option to be toggled on in the _TouchOSC_ remote app.
+ *
+ * The controller also expects an _OSC Relaying Server_ to be running,
+ * to enable bi-directionnal WS<->UDP communication between the web app
+ * and the OSC remote controller.
+ *
+ * Simply run `npm run dev:osc` in development; have a look at the
+ * `scripts/osc-relay.js` script for Node, if you would need to
+ * such an OSC Relaying Server in production.
+ *
+ * Known limitations:
+ *
+ * Currently, the OSC controller connects to a Websocket at host/port
+ * `ws://0.0.0.0:8080`, which matches the settings of the OSC Relaying
+ * Server. It works as long as you access the web app from the host
+ * running the OSC Relaying Server. However, you won't be able to
+ * control the camera, if you try to access the HTTP server from a
+ * remote computer — where no OSC Relaying Server runs and therefore,
+ * no Websocket is available to connect to at `ws://0.0.0.0:8080/`.
+ *
+ * We would need either a configuration option to the controller;
+ * or configure it dynamically, using the address of the HTTP server;
+ * or better, a discovery mechanism, to locate the OSC Relaying Server
+ * on local network (which could run independently of the HTTP server).
+ *
+ * Notes:
+ *
+ * The system is designed in a way, that it effectively only supports
+ * one remote OSC controlling app; in practice, you can have many,
+ * but only one will receive the updates of its position–, center–
+ * and perspective labels.
+ *
+ * To improve on this, we would need to be able to pick one of
+ * the OSC controller from a little GUI in the camera, and ask
+ * the OSC Relaying Server to register a route between the WS
+ * of one specific web app and the one specific OSC controller,
+ * to enable many controllers effectively controlling one webapp
+ * and receive position updates for the camera of that webapp.
+ */
 export class ThreeCameraOSCController extends ThreeCameraController {
 
   constructor( camera) {
@@ -61,6 +111,7 @@ export class ThreeCameraOSCController extends ThreeCameraController {
     // this.osc.on( "*", (message) =>
     //   console.log( "OSC message received:", message));
 
+    // Updates position of camera and/or where the camera looks at
     this.osc.on( "/camera/{eyeXY,eyeZ,centerXY,centerZ}", (incoming) => {
       const moveEyeXY = (incoming.address === "/camera/eyeXY"),
             moveEyeZ = (incoming.address === "/camera/eyeZ"),
@@ -80,14 +131,21 @@ export class ThreeCameraOSCController extends ThreeCameraController {
       z += (-0.5 + dz) * 0.1;
 
       if( moveEye) {
+        // Following assignment will run thru Lit-Element observed properties lifecycle,
+        // call `udpated()`, which in turn will call `updatePosition()`
         this.camera.position = [ x, y, z ];
         this.osc.send( this.createMessageReset( "/camera/labelEye"));
       } else {
+        // Idem, and in turn will call `updateDirection()`
         this.camera.lookAt = [ x, y, z ];
         this.osc.send( this.createMessageReset( "/camera/labelCenter"));
       }
     });
 
+    // When a control of OSC controller was released, reset it to its « center » value
+    // (applies only to those controls of the OSC P5Camera controle, which behave like
+    // a joystick, such as `eyeXY`, `eyeZ`, `centerXY`, `centerZ`, …) — requires that
+    // the « Touch Messages (/z) » option of the _TouchOSC_ control app is toggled on
     this.osc.on( "/camera/{eyeXY,eyeZ,centerXY,centerZ,zNear,zFar,zoom}/z", (incoming) => {
       const address = String( incoming.address).slice( 0, -2); // Remove last two `/z` chars
       const outgoing = this.createMessageReset( address);
@@ -96,25 +154,28 @@ export class ThreeCameraOSCController extends ThreeCameraController {
 
     // Reset camera position to its default [ x, y, z ]
     this.osc.on( "/camera/preset/5/*", () => {
-      this.camera.position = [...CameraDefault.position];
+      this.camera.position = [...CameraDefault.position]; // Copy of default position triplet (which is an array)
       this.osc.send( this.createMessageReset( "/camera/labelEye"));
     });
 
     // Reset where the camera is looking at to its default [ x, y, z ]
     this.osc.on( "/camera/preset/3/*", () => {
-      this.camera.lookAt = [...CameraDefault.lookAt];
+      this.camera.lookAt = [...CameraDefault.lookAt]; // Copy of default look-at triplet (which is an array)
       this.osc.send( this.createMessageReset( "/camera/labelCenter"));
     });
 
     // Reset camera perspective to its defaults (far, near, fov, while preserving aspect)
     this.osc.on( "/camera/preset/1/*", () => {
       const aspect = this.camera.options.aspect;
+      // Following assignments will run thru Lit-Element observed properties lifecycle,
+      // call `udpated()`, which in turn will call `updateOptions()` and `updateZoom()`
       this.camera.options = Object.assign(
         {}, CameraDefault.options.perspectiveCamera, { aspect });
       this.camera.zoom = CameraDefault.zoom;
       this.osc.send( this.createMessageReset( "/camera/labelPerspective"));
     });
 
+    // Updates camera frustum near plane (our default is 0.1)
     this.osc.on( "/camera/zNear", (incoming) => {
       const [ dzNear ] = incoming.args,
             oldNear = this.camera.options.near,
@@ -125,12 +186,16 @@ export class ThreeCameraOSCController extends ThreeCameraController {
             );
       if( newNear !== oldNear) {
         const oldVal = Object.assign( {}, this.camera.options);
-        this.camera.options.near = newNear;
-        this.osc.send( this.createMessageReset( "/camera/labelPerspective"));
+      // Internal properties of property objects are not observed by Lit-Element,
+      // therefore we manually request an update of the `options` property, which
+      // will call `updated()` and, in turn, `updateOptions()` on parent camera element
+      this.camera.options.near = newNear;
         this.camera.requestUpdate( "options", oldVal);
+        this.osc.send( this.createMessageReset( "/camera/labelPerspective"));
       }
     });
 
+    // Updates camera frustum far plane (our default is 1000)
     this.osc.on( "/camera/zFar", (incoming) => {
       const [ dzFar ] = incoming.args,
             oldFar = this.camera.options.far,
@@ -141,24 +206,29 @@ export class ThreeCameraOSCController extends ThreeCameraController {
             );
       if( newFar !== oldFar) {
         const oldVal = Object.assign( {}, this.camera.options);
+        // Idem, see comment in `/camera/zNear` message handler
         this.camera.options.far = newFar;
-        this.osc.send( this.createMessageReset( "/camera/labelPerspective"));
         this.camera.requestUpdate( "options", oldVal);
+        this.osc.send( this.createMessageReset( "/camera/labelPerspective"));
       }
     });
 
+    // Update camera frustum vertical field of view (from bottom to top
+    // of camera view, in degrees; default is 50.0)
     this.osc.on( "/camera/fovY", (incoming) => {
       const [ fovY ] = incoming.args,
             oldFov = this.camera.options.fov,
             newFov = 20.0 + 140.0 * fovY;
       if( newFov !== oldFov) {
         const oldVal = Object.assign( {}, this.camera.options);
+        // Idem, see comment in `/camera/zNear` message handler
         this.camera.options.fov = newFov;
-        this.osc.send( this.createMessageReset( "/camera/labelPerspective"));
         this.camera.requestUpdate( "options", oldVal);
+        this.osc.send( this.createMessageReset( "/camera/labelPerspective"));
       }
     });
 
+    // Updates camera zoom factor (default is 1.0)
     this.osc.on( "/camera/zoom", (incoming) => {
       const [ zoom ] = incoming.args,
             oldZoom = this.camera.zoom,
