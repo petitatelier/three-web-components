@@ -18,7 +18,7 @@ export const Default = Object.freeze({
     perspectiveCamera: {
       fov: 45,
       aspect: 1, // NOTE: will be defined during `init()`, called by parent ‹three-app› element
-      near: 1,
+      near: 0.1,
       far: 1000
     },
     orthographicCamera: {
@@ -29,6 +29,7 @@ export const Default = Object.freeze({
   },
   position: [ 0, -5, 2 ],
   lookAt: [ 0, 0, 0 ],
+  zoom: 1.0,
   controls: []
 });
 
@@ -70,6 +71,7 @@ export class ThreeCamera extends LitElement {
       options: { type: Object, reflect: true }, // Camera settings, depending on camera type
       position: { type: Array, reflect: true }, // Camera position at `[ x, y, z ]`
       lookAt: { type: Array, reflect: true, attribute: "look-at" },  // Camera looking at `[ x, y, z ]`
+      zoom: { type: Number, reflect: true },    // Camera zoom factor
       controls: { type: String, reflect: true } // Camera controlled by `osc`, `orbitter`
     };
   }
@@ -101,8 +103,9 @@ export class ThreeCamera extends LitElement {
     this.id = Default.id;
     this.type = CameraTypeEnum.perspectiveCamera;
     this.options = Object.assign( {}, Default.options.perspectiveCamera);
-    this.position = Default.position;
-    this.lookAt = Default.lookAt;
+    this.position = [...Default.position];
+    this.lookAt = [...Default.lookAt];
+    this.zoom = Default.zoom;
   }
 
   init() {
@@ -146,6 +149,9 @@ export class ThreeCamera extends LitElement {
     if( changedProperties.has( "lookAt")) {
       this.updateDirection( this.lookAt);
     }
+    if( changedProperties.has( "zoom")) {
+      this.updateZoom( this.zoom);
+    }
     if( changedProperties.has( "controls")) {
       this.updateControls( this._controls);
     }
@@ -180,13 +186,21 @@ export class ThreeCamera extends LitElement {
     if( typeof position !== "undefined") {
       const [ x, y, z ] = position;
       this._camera.position.set( x, y, z); }
-  }
+    }
 
   updateDirection( lookAt) {
     console.log( `three-camera[${this.id}] › updateDirection()`, lookAt);
     if( typeof lookAt !== "undefined") {
       const [ x, y, z ] = lookAt;
       this._camera.lookAt( x, y, z);
+    }
+  }
+
+  updateZoom( zoom) {
+    console.log( `three-camera[${this.id}] › updateZoom()`, zoom);
+    if( typeof zoom !== "undefined") {
+      this._camera.zoom = zoom;
+      this._camera.updateProjectionMatrix();
     }
   }
 
@@ -206,7 +220,6 @@ export class ThreeCamera extends LitElement {
     // for TouchOSC in `https://github.com/olange/touchosc-layouts`)
     if( this._controls.includes( "osc")) {
       console.log( `three-camera[${this.id}] › updateControls(): Registering OSC controller`);
-      // TODO
       this._controllers.osc = new ThreeCameraOSCController( this);
     }
   }
