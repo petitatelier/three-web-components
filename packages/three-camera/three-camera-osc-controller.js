@@ -96,23 +96,23 @@ export class ThreeCameraOSCController extends ThreeCameraController {
 
     // Reset camera position to its default [ x, y, z ]
     this.osc.on( "/camera/preset/5/*", () => {
-      this.camera.position = CameraDefault.position;
+      this.camera.position = [...CameraDefault.position];
       this.osc.send( this.createMessageReset( "/camera/labelEye"));
     });
 
     // Reset where the camera is looking at to its default [ x, y, z ]
     this.osc.on( "/camera/preset/3/*", () => {
-      this.camera.lookAt = CameraDefault.lookAt;
+      this.camera.lookAt = [...CameraDefault.lookAt];
       this.osc.send( this.createMessageReset( "/camera/labelCenter"));
     });
 
     // Reset camera perspective to its defaults (far, near, fov, while preserving aspect)
     this.osc.on( "/camera/preset/1/*", () => {
-      const oldVal = Object.assign( {}, this.camera.options);
+      const aspect = this.camera.options.aspect;
       this.camera.options = Object.assign(
-        {}, CameraDefault.options.perspectiveCamera, { aspect: oldVal.aspect });
+        {}, CameraDefault.options.perspectiveCamera, { aspect });
+      this.camera.zoom = CameraDefault.zoom;
       this.osc.send( this.createMessageReset( "/camera/labelPerspective"));
-      this.camera.requestUpdate( "options", oldVal);
     });
 
     this.osc.on( "/camera/zNear", (incoming) => {
@@ -156,6 +156,16 @@ export class ThreeCameraOSCController extends ThreeCameraController {
         this.camera.options.fov = newFov;
         this.osc.send( this.createMessageReset( "/camera/labelPerspective"));
         this.camera.requestUpdate( "options", oldVal);
+      }
+    });
+
+    this.osc.on( "/camera/zoom", (incoming) => {
+      const [ zoom ] = incoming.args,
+            oldZoom = this.camera.zoom,
+            newZoom = oldZoom + 0.05 * (-0.5 + zoom);
+      if( newZoom !== oldZoom) {
+        this.camera.zoom = newZoom;
+        this.osc.send( this.createMessageReset( "/camera/labelPerspective"));
       }
     });
   }
@@ -205,8 +215,9 @@ export class ThreeCameraOSCController extends ThreeCameraController {
   }
 
   getPerspectiveLabel() {
-    const { far, near, fov } = this.camera.options;
-    return `Perspective: <${near.toFixed( 2)};${far.toFixed( 2)};${fov.toFixed( 2)}>`
+    const { far, near, fov } = this.camera.options,
+          zoom = this.camera.zoom;
+    return `Perspective: <${near.toFixed( 2)};${far.toFixed( 2)};${fov.toFixed( 2)};${zoom.toFixed( 1)}x>`
   }
 
   dispose() {
