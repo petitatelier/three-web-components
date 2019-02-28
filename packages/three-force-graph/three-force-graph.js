@@ -1,6 +1,7 @@
 import { html, css } from "lit-element";
 import './ngraph.bundle.js'
 import { ThreeObject } from "@petitatelier/three-object";
+import { Group as ThreeGroup } from "three";
 import {
   AmbientLight,
 
@@ -108,7 +109,8 @@ export class ThreeForceGraph extends ThreeObject {
     // Initialize the private properties
     this._textureLoader = new TextureLoader();
     this._earthTexture  = this._textureLoader.load( "assets/textures/land_ocean_ice_cloud_2048.jpg");
-    this._graph         = {};
+    this._graph         = {};               // ngraph graph
+    this._group         = new ThreeGroup(); // Group that contains nodes, links and earth
     this._nodesMeshes   = [];
     this._nodesCounter  = 0;
     this._linksMeshes   = [];
@@ -131,7 +133,7 @@ export class ThreeForceGraph extends ThreeObject {
   init() {
     super.init();
     this.log( "init()");
-    this.scene.add( this._earth);
+    this.scene.add( this._group);
     this.scene.add( this._light);
   }
 
@@ -143,12 +145,15 @@ export class ThreeForceGraph extends ThreeObject {
       specular: 0x333333,
       shininess: 15.0,
       map: this._earthTexture,
+      transparent: true,
+      opacity: 0.5
     });
     sphereGeometry.name = `${this.id}:sphere-geometry`;
     earthMaterial.name = `${this.id}:earth-material`;
 
     this._earth = new Mesh( sphereGeometry, earthMaterial);
     this._earth.name = `${this.id}:sphere`;
+    this._group.add(this._earth);
   }
 
   /** Initialize the light of the scene */
@@ -161,7 +166,7 @@ export class ThreeForceGraph extends ThreeObject {
   firstUpdated(){
 
     // Adds a central node
-    this.addNode('centralNode', {desc: 'This is the central node'}, 0x009900);
+    this.addNode('centralNode', {desc: 'This is the central node'}, 0xFFFFFF);
 
     // Pin the central node
     var nodeToPin = this._graph.getNode('centralNode');
@@ -200,7 +205,10 @@ export class ThreeForceGraph extends ThreeObject {
   step( time, delta) {
     // console.log( `three-planet[${this.id}] › step(${time}, ${delta})`);
     if( this.animate) {
-      this._earth.rotation.y += 0.025;
+      var inc = Math.log(time) * 0.001;
+      this._group.rotation.y += inc;
+      this._group.rotation.x += inc;
+      this._group.rotation.z += inc;
       this._layout.step();
       this._updateNodes();
       this._updateLinks();
@@ -224,26 +232,6 @@ export class ThreeForceGraph extends ThreeObject {
     this._earth.material = undefined;
     this._earth = undefined;
     this._light = undefined;
-  }
-
-  /**
-   * Updates the planet's local position.
-   * @param {Array<Number>} XYZ components of the new position coordinate.
-   */
-  setEarthPosition( position) {
-    if( typeof position !== "undefined") {
-      const [ x, y, z ] = position;
-      this._earth.position.set( x, y, z); }
-  }
-
-  /**
-   * Updates the planet's local rotation.
-   * @param {THREE.Euler} rotation around axis XYZ, in radians.
-   */
-  setEarthRotation( rotation) {
-    if( typeof rotation !== "undefined") {
-      const [ rx, ry, rz ] = rotation;
-      this._earth.rotation.set( rx, ry, rz); }
   }
 
   /**
@@ -356,7 +344,7 @@ export class ThreeForceGraph extends ThreeObject {
     //this._layout.setNodePosition(node.id, initialPosition.x, initialPosition.y, initialPosition.z)
 
     // Adds the mesh to the scene
-    this.scene.add( sphereMesh);
+    this._group.add( sphereMesh);
   }
 
   /** TODO: comment + use parameters */
@@ -379,7 +367,7 @@ export class ThreeForceGraph extends ThreeObject {
     data = Object.assign(data, {mesh: line})
 
     this._graph.addLink(from, to, data);
-    this.scene.add(line)
+    this._group.add(line)
   }
 
 
