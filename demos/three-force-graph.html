@@ -29,7 +29,7 @@
           position='[0,0,0]'
           verbose
           animated
-          generate=400
+          generate=0
           generateSpeed=20
           nodeSize=0.4
           >
@@ -45,6 +45,17 @@
 
   <script>
     addEventListener( "load", () => document.body.classList.remove( "unresolved"));
+    setTimeout( () => {
+      var g = document.getElementById("three-force-graph");
+      g.data = []
+      var i = 0;
+      var interval = setInterval( () => {
+        ++i < 100 ? i : clearInterval(interval);
+        g.data.push( {id: i, data: {desc: "node "+i, config: {nodeColor: 0xFFFFcc}}})
+        g.refresh();
+
+      }, 20);
+    }, 1000);
   </script>
 </body>
 </html>
