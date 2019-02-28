@@ -23,7 +23,7 @@ The `<three-*>` web components can be used as follow (see also [demos/three-plan
 
 ```html
 <three-app fps="24" camera="c01" scene="s01">
-  <three-camera id="c01" type="perspective"></three-camera>
+  <three-camera id="c01" type="perspective" controls="osc orbitter"></three-camera>
   <three-scene id="s01">
     <three-planet id="earth" animate></three-planet>
   </three-scene>
