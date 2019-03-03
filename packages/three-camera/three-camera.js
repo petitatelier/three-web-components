@@ -106,8 +106,8 @@ export class ThreeCamera extends LitElement {
     this._camera = undefined;   // Internal THREE `Camera` object instance (`PerspectiveCamera` or `OrthographicCamera`)
     this._controls = undefined; // Internal value of `controls` attribute, reflected as an Array ([ `osc`, `orbitter` ] for instance)
     this._controllers = {       // References to the controller object(s) attached to the camera
-      osc: undefined,           // Instance of an `OSC` class — @see three-camera-osc-controller.js
-      orbitter: undefined       // (Future use)
+      osc: undefined,           // Instance of a `ThreeCameraOSCController` class
+      orbitter: undefined       // Instance of a `ThreeCameraOrbitController` class
     };
 
     // Initialize public properties
@@ -263,6 +263,12 @@ export class ThreeCamera extends LitElement {
       console.log(`three-camera[${this.id}] › updateControls(): Deregistering OSC controller`);
       this._controllers.osc.dispose();
       this._controllers.osc = undefined;
+    }
+
+    if (typeof this._controllers.orbitter !== "undefined") {
+      console.log(`three-camera[${this.id}] › updateControls(): Deregistering Orbitter controller`);
+      this._controllers.orbitter.dispose();
+      this._controllers.orbitter = undefined;
     }
   }
 

@@ -23,6 +23,7 @@ export class ThreeCameraOrbitController extends ThreeCameraController {
 
   constructor( camera) {
     super( "Orbitter", camera);
+
     this.orbitter = new OrbitControls( camera.camera); // Will add its event listeners to document, by default
     this.orbitter.autoRotate = Default.orbitter.autorotate;
   }
