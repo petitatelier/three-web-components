@@ -9,6 +9,9 @@ export const Default = Object.freeze({
   animate: true
 });
 
+const MOON_TO_EARTH_RELATIVE_DISTANCE = 384400 / 12742 / 2, // 384400 km is mean distance of moon to earth, divided by radius of earth in km, will give distance relative to radius of 1.0
+      MOON_TO_EARTH_RELATIVE_SIZE = 3474 / 12742; // 3474 km is diameter of moon, 12742 km is diameter of earth
+
 export class ThreePlanet extends ThreeObject {
 
   static get styles() {
@@ -51,19 +54,32 @@ export class ThreePlanet extends ThreeObject {
     // Initialize private properties
     this._textureLoader = new TextureLoader();
     this._earthTexture = this._textureLoader.load( "assets/textures/land_ocean_ice_cloud_2048.jpg");
+    this._moonTexture = this._textureLoader.load( "assets/textures/moon_1024.jpg");
 
-    const sphereGeometry = new SphereGeometry( 1, 60, 36);
+    const earthSphereGeometry = new SphereGeometry( 1, 60, 36);
+    const moonSphereGeometry = new SphereGeometry( MOON_TO_EARTH_RELATIVE_SIZE, 60, 36);
     const earthMaterial = new MeshPhongMaterial( {
       color: 0xFFFFFF,
       specular: 0x333333,
       shininess: 15.0,
       map: this._earthTexture
     });
-    sphereGeometry.name = `${this.id}:sphere-geometry`;
+    const moonMaterial = new MeshPhongMaterial( {
+      color: 0xFFFFFF,
+      specular: 0x333333,
+      shininess: 15.0,
+      map: this._moonTexture
+    });
+    earthSphereGeometry.name = `${this.id}:earth-sphere-geometry`;
+    moonSphereGeometry.name = `${this.id}:moon-sphere-geometry`;
     earthMaterial.name = `${this.id}:earth-material`;
+    moonMaterial.name = `${this.id}:moon-material`;
 
-    this._sphere = new Mesh( sphereGeometry, earthMaterial);
-    this._sphere.name = `${this.id}:sphere`;
+    this._earthGlobe = new Mesh( earthSphereGeometry, earthMaterial);
+    this._earthGlobe.name = `${this.id}:earthGlobe`;
+
+    this._moonGlobe = new Mesh( moonSphereGeometry, moonMaterial);
+    this._moonGlobe.name = `${this.id}:moonGlobe`;
 
     this._light = new AmbientLight( 0xFFFFFF); // soft white light
     this._light.name = `${this.id}:light`;
@@ -91,7 +107,8 @@ export class ThreePlanet extends ThreeObject {
     super.init();
     console.log( `three-planet[${this.id}] › init()`);
 
-    this.scene.add( this._sphere);
+    this.scene.add( this._earthGlobe);
+    this.scene.add( this._moonGlobe);
     this.scene.add( this._light);
   }
 
@@ -103,7 +120,9 @@ export class ThreePlanet extends ThreeObject {
     console.log( `three-planet[${this.id}] › updatePosition()`, position);
     if( typeof position !== "undefined") {
       const [ x, y, z ] = position;
-      this._sphere.position.set( x, y, z); }
+      this._earthGlobe.position.set( x, y, z);
+      this._moonGlobe.position.set( x, y - MOON_TO_EARTH_RELATIVE_DISTANCE, z + MOON_TO_EARTH_RELATIVE_DISTANCE);
+    }
   }
 
   /**
@@ -114,7 +133,7 @@ export class ThreePlanet extends ThreeObject {
     console.log( `three-planet[${this.id}] › updateRotation()`, rotation);
     if( typeof rotation !== "undefined") {
       const [ rx, ry, rz ] = rotation;
-      this._sphere.rotation.set( rx, ry, rz); }
+      this._earthGlobe.rotation.set( rx, ry, rz); }
   }
 
   /**
@@ -123,7 +142,8 @@ export class ThreePlanet extends ThreeObject {
   step( time, delta) {
     // console.log( `three-planet[${this.id}] › step(${time}, ${delta})`);
     if( this.animate) {
-      this._sphere.rotation.y += 0.025;
+      this._earthGlobe.rotation.y += 0.025;
+      this._moonGlobe.rotation.y += 0.005;
     }
   }
 
@@ -137,12 +157,15 @@ export class ThreePlanet extends ThreeObject {
     this._earthTexture = undefined;
     this._textureLoader = undefined;
 
-    this.scene.remove( this._sphere);
+    this.scene.remove( this._earthGlobe);
     this.scene.remove( this._light);
 
-    this._sphere.geometry = undefined;
-    this._sphere.material = undefined;
-    this._sphere = undefined;
+    this._earthGlobe.geometry = undefined;
+    this._earthGlobe.material = undefined;
+    this._earthGlobe = undefined;
+    this._moonGlobe.geometry = undefined;
+    this._moonGlobe.material = undefined;
+    this._moonGlobe = undefined;
     this._light = undefined;
   }
 }
