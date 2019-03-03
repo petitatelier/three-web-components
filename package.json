@@ -7,7 +7,7 @@
   "scripts": {
     "bootstrap": "npm install && ./scripts/bootstrap.sh",
     "dev": "polyserve --npm --module-resolution=node --open-path=demos/index.html --hostname $npm_package_config_http_host --port $npm_package_config_http_port",
-    "dev:osc": "node scripts/osc-relay.js & npm run dev && fg",
+    "dev:osc": "node_modules/.bin/osc-bridge & npm run dev && fg",
     "publish": "npx lerna publish"
   },
   "config": {
@@ -15,13 +15,13 @@
       "host": "0.0.0.0",
       "port": "8081"
     },
-    "osc-relay": {
+    "osc-bridge": {
       "udp-server": {
         "host": "0.0.0.0",
         "port": "7400"
       },
       "udp-client": {
-        "host": "0.0.0.0",
+        "host": "192.168.178.29",
         "port": "7500"
       },
       "ws-server": {
@@ -31,11 +31,11 @@
     }
   },
   "devDependencies": {
+    "@petitatelier/osc-bridge": "latest",
     "@webcomponents/webcomponentsjs": "^2.2.4",
     "lerna": "^3.13.0",
-    "polyserve": "^0.27.15",
-    "osc-js": "^2.0.2",
-    "ws": "^6.1.4"
+    "osc-js": "2.0.2",
+    "polyserve": "^0.27.15"
   },
   "keywords": [
     "three",

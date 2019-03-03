@@ -9,9 +9,9 @@
   "dependencies": {
     "lit-element": "^2.0.1",
     "lit-html": "^1.0.0",
-    "osc-js": "^2.0.2",
+    "osc-js": "2.0.2",
     "three": "^0.101.1",
-    "ws": "^6.1.4"
+    "ws": "6.1.4"
   },
   "keywords": [
     "three.js",
