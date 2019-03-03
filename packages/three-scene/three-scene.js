@@ -56,8 +56,16 @@ export class ThreeScene extends LitElement {
 
   init() {
     console.log( `three-scene[${this.id}] › init()`);
-    // Registers the Camera instance with the parent ‹three-app› element
+    // Registers the Scene instance with the parent ‹three-app› element
     this.registerScene();
+
+    // Initializes all child ‹three-*› elements
+    // for( let i = 0; i < this.children.length; i++) {
+    //   const elt = this.children[ i];
+    //   if( elt instanceof ThreeObject) {
+    //     elt.init();
+    //   }
+    // }
   }
 
   /**

@@ -19,7 +19,9 @@ export class ThreeObject extends LitElement {
   }
 
   /**
-   * Override, to initialize the object upon construction.
+   * Override, to initialize the object upon construction (called
+   * by `ThreeScene.init()`) or later dynamic addition to the DOM
+   * (called by `connectedCallback()`).
    */
   init() {
   }
@@ -43,18 +45,27 @@ export class ThreeObject extends LitElement {
   dispose() {
   }
 
+  /**
+   * This callback is called at different stages:
+   * 1. when the ‹three-*› element is first mounted in the DOM,
+   *    during the whole web app construction;
+   * 2. when the ‹three-*› element is added at a later stage
+   *    to the DOM, dynamically, with the whole web app already
+   *    initialized.
+   */
   connectedCallback() {
     super.connectedCallback();
     console.log( "three-object › connectedCallback()");
 
     // Lookup and store a reference to parent ‹three-scene› element
-    const sceneElt = this.closest( "three-scene");
-    if( !( sceneElt instanceof ThreeScene)) {
-      throw new Error( "Element must be a descendent of a ‹three-scene› element");
+    const sceneElement = this.closest( "three-scene");
+    if( !( sceneElement instanceof ThreeScene)) {
+      throw new Error( "Element ${this.tagName.toLowerCase()} must be a descendent of a ‹three-scene› element");
     }
-    this._sceneElement = sceneElt;
+    this._sceneElement = sceneElement;
 
-    // Initialize element
+    // Initialize element – this is for the case of an element that was
+    // added to the DOM dynamically, at a later stage than the app init
     this.init();
   }
 
