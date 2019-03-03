@@ -7,10 +7,9 @@
   "main": "three-object.js",
   "scripts": {},
   "dependencies": {
-    "@petitatelier/three-scene": "^0.2.0",
-    "lit-element": "^2.0.1",
-    "lit-html": "^1.0.0",
-    "three": "^0.101.1"
+    "@petitatelier/three-scene": "0.2.0",
+    "lit-element": "2.0.1",
+    "three": "0.101.1"
   },
   "keywords": [
     "three.js",

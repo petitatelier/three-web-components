@@ -11,12 +11,11 @@
     "watch": "npm run build-watch & browser-sync http://localhost:8081 --files \"./*,../../demos/*\""
   },
   "dependencies": {
-    "@petitatelier/three-object": "^0.2.0",
-    "lit-element": "^2.0.1",
-    "lit-html": "^1.0.0",
+    "@petitatelier/three-object": "0.2.0",
+    "lit-element": "2.0.1",
     "ngraph.forcelayout3d": "0.0.16",
     "ngraph.graph": "0.0.17",
-    "three": "^0.101.1"
+    "three": "0.101.1"
   },
   "keywords": [
     "three.js",

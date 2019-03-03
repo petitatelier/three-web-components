@@ -7,11 +7,10 @@
   "main": "three-app.js",
   "scripts": {},
   "dependencies": {
-    "@petitatelier/three-camera": "^0.2.0",
-    "@petitatelier/three-scene": "^0.2.0",
-    "lit-element": "^2.0.1",
-    "lit-html": "^1.0.0",
-    "three": "^0.101.1"
+    "@petitatelier/three-camera": "0.2.0",
+    "@petitatelier/three-scene": "0.2.0",
+    "lit-element": "2.0.1",
+    "three": "0.101.1"
   },
   "keywords": [
     "three.js",
