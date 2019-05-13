@@ -32,8 +32,8 @@
   },
   "devDependencies": {
     "@petitatelier/osc-bridge": "latest",
-    "@webcomponents/webcomponentsjs": "^2.2.4",
-    "lerna": "^3.13.0",
+    "@webcomponents/webcomponentsjs": "^2.2.10",
+    "lerna": "^3.13.4",
     "osc-js": "2.0.2",
     "polyserve": "^0.27.15"
   },
