@@ -10,7 +10,7 @@
     "lit-element": "2.0.1",
     "osc-js": "2.0.2",
     "three": "0.101.1",
-    "ws": "6.1.4"
+    "ws": "7.4.6"
   },
   "keywords": [
     "three.js",
